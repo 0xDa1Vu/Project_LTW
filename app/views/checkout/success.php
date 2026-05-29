@@ -4,8 +4,13 @@
         <h1>Đặt hàng thành công!</h1>
         <p>Mã đơn hàng: <strong>#<?= (int) $order['id'] ?></strong></p>
         <p>Trạng thái: <span class="status-badge status-<?= e($order['status']) ?>"><?= e($order['status']) ?></span></p>
-        <p>Thanh toán: <?= $order['payment_method'] === 'vnpay' ? 'VNPay' : 'COD' ?>
+        <?php $pmLabels = ['vnpay' => 'VNPay', 'sepay' => 'Chuyển khoản QR (SePay)', 'cod' => 'COD']; ?>
+        <p>Thanh toán: <?= $pmLabels[$order['payment_method']] ?? 'COD' ?>
            (<?= e($order['payment_status']) ?>)</p>
+
+        <?php if ($order['payment_method'] === 'sepay' && $order['payment_status'] !== 'paid'): ?>
+            <p><a href="/payment/sepay/<?= (int) $order['id'] ?>" class="btn btn-outline">Thanh toán lại bằng QR</a></p>
+        <?php endif; ?>
 
         <div class="order-items">
             <?php foreach ($items as $it): ?>
