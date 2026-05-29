@@ -1,6 +1,10 @@
 # Đưa mọi request không phải file/thư mục thật về front controller index.php
 RewriteEngine On
 
+# Forward header Authorization tới PHP (mod_php hay nuốt header này) — cần cho webhook SePay
+RewriteCond %{HTTP:Authorization} .
+RewriteRule ^ - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+
 # Nếu là file hoặc thư mục tồn tại (css, js, ảnh upload...) -> phục vụ trực tiếp
 RewriteCond %{REQUEST_FILENAME} -f [OR]
 RewriteCond %{REQUEST_FILENAME} -d

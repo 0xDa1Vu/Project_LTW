@@ -154,7 +154,16 @@ class PaymentController extends Controller
     public function sepayWebhook(): void
     {
         $apiKey = cfg('sepay.api_key');
-        $auth   = $_SERVER['HTTP_AUTHORIZATION'] ?? '';
+        // Apache/mod_php không luôn đẩy Authorization vào $_SERVER -> ưu tiên getallheaders().
+        $auth = '';
+        if (function_exists('getallheaders')) {
+            foreach (getallheaders() as $k => $v) {
+                if (strcasecmp($k, 'Authorization') === 0) { $auth = $v; break; }
+            }
+        }
+        if ($auth === '') {
+            $auth = $_SERVER['HTTP_AUTHORIZATION'] ?? $_SERVER['REDIRECT_HTTP_AUTHORIZATION'] ?? '';
+        }
         // Chấp nhận "Apikey xxx" hoặc "Bearer xxx".
         $token = preg_replace('/^(Apikey|Bearer)\s+/i', '', trim($auth));
         if ($apiKey === '' || !hash_equals($apiKey, $token)) {
