@@ -41,7 +41,8 @@ class OrderController extends Controller
             $this->redirect('/cart');
         }
 
-        $method = $this->input('payment_method') === 'vnpay' ? 'vnpay' : 'cod';
+        $method = $this->input('payment_method');
+        $method = in_array($method, ['vnpay', 'sepay'], true) ? $method : 'cod';
         $info = [
             'user_id'          => Auth::id(),
             'payment_method'   => $method,
@@ -69,6 +70,10 @@ class OrderController extends Controller
         if ($method === 'vnpay') {
             // Chuyển sang luồng VNPay (PaymentController dựng URL)
             $this->redirect('/payment/vnpay/create?order_id=' . $orderId);
+        }
+        if ($method === 'sepay') {
+            // Chuyển sang trang QR chuyển khoản SePay
+            $this->redirect('/payment/sepay/' . $orderId);
         }
 
         Session::flash('success', 'Đặt hàng thành công! Mã đơn #' . $orderId);

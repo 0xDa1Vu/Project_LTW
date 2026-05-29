@@ -23,6 +23,9 @@
                 <input type="radio" name="payment_method" value="cod" checked> Thanh toán khi nhận hàng (COD)
             </label>
             <label class="radio-row">
+                <input type="radio" name="payment_method" value="sepay"> Chuyển khoản QR (SePay)
+            </label>
+            <label class="radio-row">
                 <input type="radio" name="payment_method" value="vnpay"> Thanh toán online qua VNPay
             </label>
         </div>
