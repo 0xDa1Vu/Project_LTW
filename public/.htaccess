@@ -1,0 +1,15 @@
+# Đưa mọi request không phải file/thư mục thật về front controller index.php
+RewriteEngine On
+
+# Nếu là file hoặc thư mục tồn tại (css, js, ảnh upload...) -> phục vụ trực tiếp
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+
+# Còn lại -> index.php
+RewriteRule ^ index.php [L]
+
+# --- Ghi chú cấu hình nginx tương đương ---
+# location / {
+#     try_files $uri $uri/ /index.php?$query_string;
+# }
