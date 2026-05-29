@@ -7,10 +7,11 @@
 BEGIN;
 
 -- ---- Nguoi dung ----
+-- Hash bcrypt that (admin123 / 123456) — sinh bang password_hash() PHP.
 INSERT INTO users (name, email, password_hash, role, phone, address) VALUES
-  ('Quan tri vien', 'admin@shop.test', '', 'admin', '0900000001', 'Van phong ATELIER, Ha Noi'),
-  ('Nguyen Van An', 'an@shop.test', '', 'customer', '0911111111', '12 Le Loi, Quan 1, TP.HCM'),
-  ('Tran Thi Binh', 'binh@shop.test', '', 'customer', '0922222222', '34 Cau Giay, Ha Noi');
+  ('Quan tri vien', 'admin@shop.test', '$2y$10$vcbmDrTl/vr9eYeKveJLmeVigj6jg2FZugFP7Ve5lsERaeCleJHQi', 'admin', '0900000001', 'Van phong ATELIER, Ha Noi'),
+  ('Nguyen Van An', 'an@shop.test', '$2y$10$xGVQFDzQQwwaEft29cqpBexzIigt9TmHByPZdeQIRDyohQn.IlcHa', 'customer', '0911111111', '12 Le Loi, Quan 1, TP.HCM'),
+  ('Tran Thi Binh', 'binh@shop.test', '$2y$10$xGVQFDzQQwwaEft29cqpBexzIigt9TmHByPZdeQIRDyohQn.IlcHa', 'customer', '0922222222', '34 Cau Giay, Ha Noi');
 
 -- ---- Danh muc ----
 INSERT INTO categories (name, slug) VALUES
