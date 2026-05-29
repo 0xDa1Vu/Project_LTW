@@ -53,6 +53,11 @@ $router->post('/review', [ReviewController::class, 'store']);
 $router->post('/payment/vnpay/create', [PaymentController::class, 'vnpayCreate']);
 $router->get('/payment/vnpay/return', [PaymentController::class, 'vnpayReturn']);
 
+// ---- Thanh toán SePay (chuyển khoản QR) ----
+$router->get('/payment/sepay/{id}', [PaymentController::class, 'sepayShow']);
+$router->get('/payment/sepay/check/{id}', [PaymentController::class, 'sepayCheck']);
+$router->post('/payment/sepay/webhook', [PaymentController::class, 'sepayWebhook']);
+
 // ---- Admin ----
 $router->get('/admin', [DashboardController::class, 'index']);
 $router->get('/admin/stats', [DashboardController::class, 'stats']);
