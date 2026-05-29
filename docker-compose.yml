@@ -25,7 +25,7 @@ services:
       POSTGRES_USER: shop
       POSTGRES_PASSWORD: shop_secret
     ports:
-      - "5433:5432"
+      - "5434:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
       - ./database/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
