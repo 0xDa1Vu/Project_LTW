@@ -101,7 +101,7 @@ CREATE TABLE orders (
     status           VARCHAR(20) NOT NULL DEFAULT 'pending'
                      CHECK (status IN ('pending','confirmed','shipping','completed','cancelled')),
     payment_method   VARCHAR(20) NOT NULL DEFAULT 'cod'
-                     CHECK (payment_method IN ('cod','vnpay')),
+                     CHECK (payment_method IN ('cod','vnpay','sepay')),
     payment_status   VARCHAR(20) NOT NULL DEFAULT 'unpaid'
                      CHECK (payment_status IN ('unpaid','paid','failed')),
     shipping_address TEXT NOT NULL,
