@@ -1,8 +1,17 @@
 <!-- HERO VIDEO full-width -->
+<?php
+// Chỉ render <video> nếu hero.mp4 thực sự tồn tại; nếu không, nền gradient (.hero)
+// + poster SVG hiển thị đẹp như banner tĩnh.
+$heroVideo = dirname(__DIR__, 3) . '/public/assets/hero.mp4';
+?>
 <section class="hero">
-    <video class="hero-video" autoplay muted loop playsinline poster="/assets/hero-poster.jpg">
-        <source src="/assets/hero.mp4" type="video/mp4">
-    </video>
+    <?php if (is_file($heroVideo)): ?>
+        <video class="hero-video" autoplay muted loop playsinline poster="/assets/hero-poster.svg">
+            <source src="/assets/hero.mp4" type="video/mp4">
+        </video>
+    <?php else: ?>
+        <img class="hero-video" src="/assets/hero-poster.svg" alt="" aria-hidden="true">
+    <?php endif; ?>
     <div class="hero-overlay">
         <div class="hero-content">
             <h1 class="hero-title">ATELIER</h1>
