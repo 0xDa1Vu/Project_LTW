@@ -9,7 +9,7 @@
 | Backend | **PHP thuần** (8.2), tổ chức **MVC nhẹ** tự xây — không framework |
 | Database | **PostgreSQL 16** truy cập qua **PDO** (prepared statements) |
 | Frontend | **HTML + CSS + JS thuần**, Chart.js (CDN) cho dashboard |
-| Thanh toán | **COD** (mặc định). Cổng thanh toán online sẽ tích hợp **SePay** sau |
+| Thanh toán | **COD**, **SePay** (chuyển khoản QR + webhook đối soát tự động), **VNPay** (sandbox) |
 | Triển khai | **Docker Compose** (web Apache + db Postgres + Adminer) |
 
 > ⚠️ **Lưu ý về đề bài:** đề gợi ý dùng MySQL, nhóm chọn **PostgreSQL**. Vì truy cập qua PDO + SQL chuẩn nên dễ port lại nếu cần. Một vài cú pháp đặc thù Postgres được dùng: `ILIKE`, `ON CONFLICT ... DO UPDATE`, `interval`, `JSONB`, `to_char`.
@@ -85,7 +85,7 @@ docker compose up -d --build
 - Trang chủ: hero full-width (video nếu có `assets/hero.mp4`, không thì poster gradient), danh mục, sản phẩm mới, bán chạy.
 - Danh sách sản phẩm: lọc (danh mục / giá / size / màu), sắp xếp, phân trang, tìm kiếm.
 - Chi tiết sản phẩm: gallery ảnh, chọn biến thể (size/màu), thêm giỏ (AJAX), đánh giá.
-- Giỏ hàng AJAX (cập nhật số lượng / xoá / badge), checkout, đặt hàng (trừ kho theo biến thể, snapshot giá).
+- Giỏ hàng AJAX (cập nhật số lượng / xoá / badge), checkout 3 phương thức (COD / SePay QR / VNPay), đặt hàng (trừ kho theo biến thể, snapshot giá).
 - Tài khoản: lịch sử đơn, chi tiết đơn, cập nhật hồ sơ.
 
 **Trang quản trị** (`/admin`, chặn bằng `requireRole('admin')`)
@@ -102,7 +102,21 @@ docker compose up -d --build
 
 ## Thanh toán
 
-Hiện tại đơn hàng dùng **COD** nên có thể đặt hàng ngay. Cổng thanh toán online (**SePay** — quét QR / chuyển khoản) dự kiến tích hợp sau; phần này để cuối lộ trình.
+Khi đặt hàng, khách chọn 1 trong 3 phương thức:
+
+- **COD** — thanh toán khi nhận hàng (mặc định).
+- **SePay (chuyển khoản QR)** — sinh mã **VietQR** động (qua `img.vietqr.io`) với đúng số tiền và nội dung `DH<mã đơn>`. Khi khách chuyển khoản, **SePay gọi webhook** `POST /payment/sepay/webhook` (xác thực bằng header `Authorization: Apikey <SEPAY_API_KEY>`); hệ thống đối soát số tiền + nội dung rồi tự cập nhật đơn sang `paid` / `confirmed`. Trang chờ cũng có nút **"Tôi đã chuyển khoản — Kiểm tra"** và tự hỏi trạng thái mỗi 5 giây.
+- **VNPay** — cổng sandbox (cần `VNP_TMN_CODE` / `VNP_HASH_SECRET`).
+
+Cấu hình SePay trong `.env` (xem `.env.example`): `SEPAY_ACCOUNT_NUMBER`, `SEPAY_BANK`, `SEPAY_ACCOUNT_NAME`, `SEPAY_API_KEY`, `SEPAY_PREFIX`.
+
+**Thử webhook ở local** (không cần SePay thật) — giả lập một giao dịch tiền vào cho đơn `#<id>`:
+
+```bash
+curl -X POST http://localhost:8000/payment/sepay/webhook \
+  -H "Authorization: Apikey <SEPAY_API_KEY>" -H "Content-Type: application/json" \
+  -d '{"transferType":"in","transferAmount":<SỐ_TIỀN>,"content":"DH<id>","referenceCode":"FT123"}'
+```
 
 > File `.env` chứa thông tin nhạy cảm nên **không** được commit (đã có trong `.gitignore`).
 
