@@ -1,6 +1,7 @@
 <?php
 use App\Core\Router;
 use App\Controllers\HomeController;
+use App\Controllers\PageController;
 use App\Controllers\ProductController;
 use App\Controllers\CartController;
 use App\Controllers\OrderController;
@@ -19,6 +20,11 @@ $router = new Router();
 
 // ---- Khách ----
 $router->get('/', [HomeController::class, 'index']);
+
+// ---- Trang tĩnh ----
+$router->get('/about', [PageController::class, 'about']);
+$router->get('/care', [PageController::class, 'care']);
+$router->get('/faq', [PageController::class, 'faq']);
 
 $router->get('/products', [ProductController::class, 'index']);
 $router->get('/product/{slug}', [ProductController::class, 'show']);
