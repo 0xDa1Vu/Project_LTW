@@ -3,6 +3,8 @@
 // Chỉ render <video> nếu hero.mp4 thực sự tồn tại; nếu không, nền gradient (.hero)
 // + poster SVG hiển thị đẹp như banner tĩnh.
 $heroVideo = dirname(__DIR__, 3) . '/public/assets/hero.mp4';
+// bodyClass 'home' để header trong suốt đè lên video (xem .home .site-header trong CSS)
+$bodyClass = 'home';
 ?>
 <section class="hero">
     <?php if (is_file($heroVideo)): ?>
@@ -13,10 +15,9 @@ $heroVideo = dirname(__DIR__, 3) . '/public/assets/hero.mp4';
         <img class="hero-video" src="/assets/hero-poster.svg" alt="" aria-hidden="true">
     <?php endif; ?>
     <div class="hero-overlay">
-        <div class="hero-content">
-            <h1 class="hero-title">ATELIER</h1>
-            <p class="hero-sub">Bộ sưu tập thời trang tối giản · hiện đại</p>
-            <a href="/products" class="btn btn-light">Khám phá ngay</a>
+        <div class="hero-corner">
+            <span class="hero-watermark">ATELIER</span>
+            <a href="/products" class="hero-btn">KHÁM PHÁ</a>
         </div>
     </div>
 </section>
