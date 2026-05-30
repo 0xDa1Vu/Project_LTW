@@ -45,7 +45,42 @@
     });
   }
 
-  // ---- 4. Form lọc: submit ngay khi đổi select ----
+  // ---- 4. Nút SEARCH: mở/đóng drawer trượt từ phải ----
+  var searchToggle = document.getElementById('searchToggle');
+  var searchDrawer = document.getElementById('searchDrawer');
+  var searchOverlay = document.getElementById('searchOverlay');
+  var searchClose = document.getElementById('searchClose');
+  if (searchToggle && searchDrawer && searchOverlay) {
+    var openSearch = function () {
+      searchDrawer.hidden = false;
+      searchOverlay.hidden = false;
+      // đợi 1 frame để transition chạy từ trạng thái ẩn
+      requestAnimationFrame(function () {
+        searchDrawer.classList.add('show');
+        searchOverlay.classList.add('show');
+      });
+      document.body.style.overflow = 'hidden';
+      var inp = searchDrawer.querySelector('input');
+      if (inp) setTimeout(function () { inp.focus(); }, 350);
+    };
+    var closeSearch = function () {
+      searchDrawer.classList.remove('show');
+      searchOverlay.classList.remove('show');
+      document.body.style.overflow = '';
+      setTimeout(function () {
+        searchDrawer.hidden = true;
+        searchOverlay.hidden = true;
+      }, 350);
+    };
+    searchToggle.addEventListener('click', openSearch);
+    searchOverlay.addEventListener('click', closeSearch);
+    if (searchClose) searchClose.addEventListener('click', closeSearch);
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && !searchDrawer.hidden) closeSearch();
+    });
+  }
+
+  // ---- 5. Form lọc: submit ngay khi đổi select ----
   var filterForm = document.getElementById('filterForm');
   if (filterForm) {
     Array.prototype.forEach.call(filterForm.querySelectorAll('select'), function (sel) {
