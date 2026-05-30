@@ -13,26 +13,22 @@ $flash = Session::takeFlash();
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/css/style.css">
 </head>
-<body>
+<body class="<?= isset($bodyClass) ? e($bodyClass) : '' ?>">
 <header class="site-header" id="siteHeader">
     <div class="container header-inner">
-        <a href="/" class="logo">ATELIER</a>
         <button class="nav-toggle" id="navToggle" aria-label="Mở menu">☰</button>
         <nav class="main-nav" id="mainNav">
-            <a href="/">Trang chủ</a>
-            <a href="/products">Sản phẩm</a>
-            <form class="search-form" action="/products" method="get">
-                <input type="search" name="q" placeholder="Tìm sản phẩm..." value="<?= e($_GET['q'] ?? '') ?>">
-                <button type="submit" aria-label="Tìm">⌕</button>
-            </form>
+            <a href="/products">SHOP</a>
+            <a href="/about">ABOUT</a>
+            <a href="/care">WHENEVER CARE</a>
+            <a href="/faq">FAQ</a>
         </nav>
+        <a href="/" class="logo">ATELIER</a>
         <div class="header-actions">
-            <a href="/cart" class="cart-link" aria-label="Giỏ hàng">
-                🛍 <span class="cart-count" id="cartCount">0</span>
-            </a>
+            <button type="button" class="header-link" id="searchToggle" aria-label="Tìm kiếm">SEARCH</button>
             <?php if (Auth::check()): ?>
                 <div class="dropdown">
-                    <button class="dropdown-btn"><?= e(Session::get('user_name')) ?> ▾</button>
+                    <button class="dropdown-btn header-link">ACCOUNT</button>
                     <div class="dropdown-menu">
                         <a href="/account">Tài khoản</a>
                         <a href="/account/orders">Đơn hàng</a>
@@ -46,11 +42,42 @@ $flash = Session::takeFlash();
                     </div>
                 </div>
             <?php else: ?>
-                <a href="/login" class="btn-text">Đăng nhập</a>
+                <a href="/login" class="header-link">ACCOUNT</a>
             <?php endif; ?>
+            <a href="/cart" class="header-link cart-link">CART (<span class="cart-count" id="cartCount">0</span>)</a>
         </div>
     </div>
 </header>
+
+<?php
+// Gợi ý tìm kiếm = tên các danh mục (lấy động từ DB)
+$searchSuggestions = [];
+try {
+    foreach ((new \App\Models\Category())->allOrdered() as $cat) {
+        $searchSuggestions[] = $cat['name'];
+    }
+} catch (\Throwable $e) { /* nếu DB lỗi thì panel vẫn mở, chỉ không có gợi ý */ }
+?>
+<!-- SEARCH DRAWER: panel trượt từ phải -->
+<div class="search-overlay" id="searchOverlay" hidden></div>
+<aside class="search-drawer" id="searchDrawer" hidden aria-label="Tìm kiếm">
+    <div class="search-drawer-head">
+        <h2>search</h2>
+        <button type="button" class="search-close" id="searchClose" aria-label="Đóng">&times;</button>
+    </div>
+    <form action="/products" method="get">
+        <input type="search" name="q" class="search-drawer-input" placeholder="Type here"
+               value="<?= e($_GET['q'] ?? '') ?>">
+    </form>
+    <?php if ($searchSuggestions): ?>
+        <p class="search-sg-label">suggestions:</p>
+        <ul class="search-sg-list">
+            <?php foreach ($searchSuggestions as $sg): ?>
+                <li><a href="/products?q=<?= urlencode($sg) ?>"><?= e($sg) ?></a></li>
+            <?php endforeach; ?>
+        </ul>
+    <?php endif; ?>
+</aside>
 
 <?php if ($flash): ?>
 <div class="toast-stack" id="toastStack">
