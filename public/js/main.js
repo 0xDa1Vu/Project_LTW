@@ -80,6 +80,17 @@
     });
   }
 
+  // ---- 5b. Trang chủ: đổi nền navbar khi cuộn xuống ----
+  var siteHeader = document.getElementById('siteHeader');
+  if (siteHeader && document.body.classList.contains('home')) {
+    var onScroll = function () {
+      if (window.scrollY > 40) siteHeader.classList.add('scrolled');
+      else siteHeader.classList.remove('scrolled');
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+  }
+
   // ---- 5. Form lọc: submit ngay khi đổi select ----
   var filterForm = document.getElementById('filterForm');
   if (filterForm) {

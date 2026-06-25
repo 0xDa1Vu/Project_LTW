@@ -99,10 +99,16 @@ a{color:inherit;text-decoration:none}
 .hero-btn:hover{background:#fff;color:var(--black);transform:translateY(-2px)}
 @keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
 
-/* trang chủ: header trong suốt nằm ĐÈ lên top của video (nằm trong khung bo góc) */
-.home .site-header{position:absolute;top:1.25rem;left:1.25rem;right:1.25rem;z-index:50;
-    background:transparent;backdrop-filter:none;border-bottom:none;color:#fff}
+/* trang chủ: header trong suốt nằm ĐÈ lên top của video, neo cố định khi cuộn */
+.home .site-header{position:fixed;top:1.25rem;left:1.25rem;right:1.25rem;z-index:50;
+    background:transparent;backdrop-filter:none;border-bottom:none;color:#fff;
+    transition:background .3s ease,color .3s ease,top .3s ease,border-color .3s ease}
 .home .site-header .logo{color:#fff}
+/* khi cuộn xuống: thêm nền trắng mờ + chữ tối cho dễ đọc */
+.home .site-header.scrolled{top:0;left:0;right:0;color:var(--black);
+    background:rgba(255,255,255,.95);backdrop-filter:blur(8px);
+    border-bottom:1px solid var(--gray-2)}
+.home .site-header.scrolled .logo{color:var(--black)}
 .home .hero{margin-top:0}            /* hero vẫn ở top, header phủ lên */
 .home main{margin-top:0}
 .home .search-form{border-color:rgba(255,255,255,.5)}

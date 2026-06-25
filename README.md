@@ -132,6 +132,110 @@ psql -d fashion_shop -f database/seed.sql
 php -S localhost:8000 -t public
 ```
 
+## Danh sách chức năng
+
+### Khách (chưa đăng nhập)
+
+| Chức năng | Route |
+|---|---|
+| Trang chủ (hero, danh mục, sản phẩm nổi bật) | `GET /` |
+| Danh sách sản phẩm (lọc / sắp xếp / phân trang / tìm kiếm) | `GET /products` |
+| Chi tiết sản phẩm (gallery, chọn biến thể, đánh giá) | `GET /product/{slug}` |
+| Trang tĩnh About / Care / FAQ | `GET /about`, `/care`, `/faq` |
+| Xem giỏ hàng | `GET /cart` |
+| Thêm / cập nhật / xoá sản phẩm trong giỏ (AJAX) | `POST /cart/add`, `/cart/update`, `/cart/remove` |
+| Badge số lượng giỏ hàng | `GET /cart/count` |
+| Đăng ký tài khoản | `GET /register`, `POST /register` |
+| Đăng nhập | `GET /login`, `POST /login` |
+| Đăng xuất | `POST /logout` |
+
+### Người dùng đã đăng nhập
+
+| Chức năng | Route |
+|---|---|
+| Trang tài khoản (thông tin cá nhân) | `GET /account` |
+| Cập nhật hồ sơ | `POST /account/profile` |
+| Lịch sử đơn hàng | `GET /account/orders` |
+| Chi tiết đơn hàng | `GET /account/order/{id}` |
+| Đặt hàng (checkout) | `GET /checkout` → `POST /checkout` |
+| Trang xác nhận đơn thành công | `GET /order/success/{id}` |
+| Gửi đánh giá sản phẩm | `POST /review` |
+
+### Thanh toán
+
+| Phương thức | Flow |
+|---|---|
+| **COD** | Đặt hàng → trạng thái `pending`, thu tiền khi giao |
+| **SePay QR** | `POST /checkout` → `GET /payment/sepay/{id}` (hiện QR) → webhook `POST /payment/sepay/webhook` tự cập nhật `paid` |
+| **VNPay** | `POST /payment/vnpay/create` → redirect cổng VNPay → `GET /payment/vnpay/return` |
+
+### Admin (`/admin` — yêu cầu role `admin`)
+
+| Module | Chức năng | Route |
+|---|---|---|
+| Dashboard | Biểu đồ doanh thu 14 ngày, đơn theo trạng thái, top sản phẩm | `GET /admin`, `/admin/stats` |
+| Sản phẩm | Xem danh sách, tạo mới, sửa, xoá, upload ảnh, quản lý biến thể | `GET|POST /admin/products/...` |
+| Danh mục | Xem, tạo, sửa, xoá | `GET|POST /admin/categories/...` |
+| Đơn hàng | Xem danh sách, chi tiết, cập nhật trạng thái | `GET|POST /admin/orders/...` |
+| Người dùng | Xem danh sách, đổi role, xoá | `GET|POST /admin/users/...` |
+| Đánh giá | Xem danh sách, xoá | `GET|POST /admin/reviews/...` |
+
+---
+
+## Flow hoạt động
+
+### Mua hàng (khách)
+
+```
+Xem sản phẩm (/products → /product/{slug})
+        ↓
+Chọn biến thể → Thêm giỏ hàng (AJAX)
+        ↓
+/cart  →  /checkout  →  POST /checkout
+        ↓
+  ┌─────┴──────┬──────────────┐
+ COD        SePay QR       VNPay
+  │      /payment/sepay    /payment/vnpay/create
+  │       (QR + polling)      (redirect)
+  │       webhook auto     /payment/vnpay/return
+  └─────┬──────┴──────────────┘
+        ↓
+ /order/success/{id}  →  /account/orders
+        ↓
+ POST /review  (đánh giá sản phẩm)
+```
+
+### Vòng đời đơn hàng
+
+```
+pending  →  confirmed  →  shipped  →  delivered
+                                           ↑
+  (COD)  hoặc  paid (SePay/VNPay)  →  confirmed  →  shipped  →  delivered
+                                           ↑
+                              Admin cập nhật trạng thái tại /admin/orders
+```
+
+### Luồng xác thực & phân quyền
+
+```
+Request đến bất kỳ /admin/*
+        ↓
+Auth::requireRole('admin')
+        ├── Chưa đăng nhập  → redirect /login (401)
+        ├── Đã đăng nhập nhưng không phải admin → 403
+        └── Admin hợp lệ → vào controller
+```
+
+### Kiến trúc request
+
+```
+Browser  →  public/index.php  →  Router  →  Controller
+                                                 ↓
+                                            Model (PDO/PostgreSQL)
+                                                 ↓
+                                          View (PHP template)  →  Response HTML
+```
+
 ---
 
 Đồ án môn Lập trình Web — ATELIER · PHP thuần + PostgreSQL.
