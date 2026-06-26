@@ -7,6 +7,7 @@ use App\Core\Csrf;
 use App\Core\Session;
 use App\Models\Cart;
 use App\Models\Order;
+use App\Models\Coupon;
 
 class OrderController extends Controller
 {
@@ -41,10 +42,16 @@ class OrderController extends Controller
 
         $method = $this->input('payment_method');
         $method = in_array($method, ['vnpay', 'sepay'], true) ? $method : 'cod';
+        $street   = trim($this->input('street'));
+        $ward     = trim($this->input('ward_name'));
+        $province = trim($this->input('province_name'));
+        $addrParts = array_filter([$street, $ward, $province]);
+        $address = implode(', ', $addrParts);
+
         $info = [
             'user_id'          => Auth::id(),
             'payment_method'   => $method,
-            'shipping_address' => $this->input('address'),
+            'shipping_address' => $address,
             'phone'            => $this->input('phone'),
             'customer_name'    => $this->input('name'),
             'note'             => $this->input('note'),
@@ -55,9 +62,25 @@ class OrderController extends Controller
             $this->redirect('/checkout');
         }
 
+        // Áp dụng coupon nếu có
+        $couponCode = strtoupper(trim($this->input('coupon_code')));
+        $discount   = 0;
+        $couponId   = null;
+        if ($couponCode !== '') {
+            $couponModel = new Coupon();
+            $coupon = $couponModel->findByCode($couponCode);
+            if ($coupon) {
+                $rawTotal = array_sum(array_map(fn($i) => $i['price'] * $i['quantity'], $items));
+                $discount = $couponModel->calcDiscount($coupon, (int) $rawTotal);
+                $couponId = $coupon['id'];
+            }
+        }
+        $info['discount'] = $discount;
+
         try {
             $orderModel = new Order();
             $orderId = $orderModel->placeOrder($info, $items);
+            if ($couponId) (new Coupon())->incrementUsed($couponId);
             $cartModel->clear((int) $cart['id']);
             if (!Auth::id()) {
                 $_SESSION['guest_order_id'] = $orderId;

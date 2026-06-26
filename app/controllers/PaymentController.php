@@ -232,6 +232,33 @@ class PaymentController extends Controller
         ]);
     }
 
+    /** Đổi phương thức thanh toán: sepay ↔ cod (chỉ khi chưa thanh toán). */
+    public function changeMethod(string $id): void
+    {
+        $orderId = (int) $id;
+        $order = $this->findOrderForCurrentUser($orderId);
+        if (!$order) { (new HomeController())->notFound(); return; }
+
+        if ($order['payment_status'] === 'paid') {
+            $this->redirect('/payment/sepay/' . $orderId);
+            return;
+        }
+
+        $method = $_POST['method'] ?? '';
+        if (!in_array($method, ['sepay', 'cod'], true)) {
+            $this->redirect('/payment/sepay/' . $orderId);
+            return;
+        }
+
+        (new Order())->setPaymentMethod($orderId, $method);
+
+        if ($method === 'cod') {
+            $this->redirect('/order/success/' . $orderId);
+        } else {
+            $this->redirect('/payment/sepay/' . $orderId);
+        }
+    }
+
     /** Tìm đơn hàng cho user đang đăng nhập hoặc guest (qua session). */
     private function findOrderForCurrentUser(int $orderId): ?array
     {

@@ -69,7 +69,7 @@ class ProductController extends Controller
         $this->saveVariants((int) $id);
         $this->saveImages((int) $id); // thêm ảnh mới nếu có upload
         Session::flash('success', 'Đã cập nhật sản phẩm.');
-        $this->redirect('/admin/products');
+        $this->redirect('/admin/products/edit/' . (int) $id);
     }
 
     public function destroy(string $id): void
@@ -79,6 +79,49 @@ class ProductController extends Controller
         (new Product())->delete((int) $id);
         Session::flash('success', 'Đã xoá sản phẩm.');
         $this->redirect('/admin/products');
+    }
+
+    public function deleteImage(string $id): void
+    {
+        Auth::requireRole('admin');
+        Csrf::verify();
+        $imageModel = new ProductImage();
+        $img = $imageModel->find((int) $id);
+        if ($img) {
+            $imageModel->deleteOne((int) $id);
+            $file = dirname(__DIR__, 3) . '/public' . $img['image_url'];
+            if (str_starts_with($img['image_url'], '/uploads/') && is_file($file)) {
+                @unlink($file);
+            }
+        }
+        $productId = $img['product_id'] ?? 0;
+        Session::flash('success', 'Đã xoá ảnh.');
+        $this->redirect('/admin/products/edit/' . $productId);
+    }
+
+    public function setPrimaryImage(string $id): void
+    {
+        Auth::requireRole('admin');
+        Csrf::verify();
+        $imageModel = new ProductImage();
+        $img = $imageModel->find((int) $id);
+        if ($img) {
+            $imageModel->setPrimary((int) $id, (int) $img['product_id']);
+        }
+        $this->redirect('/admin/products/edit/' . ($img['product_id'] ?? 0));
+    }
+
+    public function reorderImages(): void
+    {
+        Auth::requireRole('admin');
+        header('Content-Type: application/json');
+        $body = json_decode(file_get_contents('php://input'), true);
+        $ids  = array_filter((array)($body['ids'] ?? []), 'is_numeric');
+        if ($ids) {
+            (new ProductImage())->reorder(array_values($ids));
+        }
+        echo json_encode(['ok' => true]);
+        exit;
     }
 
     // ---- helpers ----
@@ -95,6 +138,7 @@ class ProductController extends Controller
             'sale_price'  => $this->input('sale_price'),
             'brand'       => $this->input('brand'),
             'status'      => $this->input('status') === 'hidden' ? 'hidden' : 'active',
+            'is_featured' => $this->input('is_featured') === '1',
         ];
     }
 

@@ -20,7 +20,8 @@ class Order extends Model
             foreach ($items as $it) {
                 $total += $it['price'] * $it['quantity'];
             }
-            $total += 30000; // phí vận chuyển cố định
+            $discount = max(0, (int) ($info['discount'] ?? 0));
+            $total = max(0, $total - $discount) + 30000; // phí vận chuyển cố định
 
             $orderId = $this->insert([
                 'user_id'          => $info['user_id'],
@@ -104,5 +105,10 @@ class Order extends Model
             $data['status'] = $newStatus;
         }
         return $this->update($id, $data);
+    }
+
+    public function setPaymentMethod(int $id, string $method): bool
+    {
+        return $this->update($id, ['payment_method' => $method]);
     }
 }

@@ -20,35 +20,6 @@ $bodyClass = 'home';
     </div>
 </section>
 
-<!-- SHOP BY CATEGORY -->
-<section class="section-cat-hero">
-    <div class="cat-hero-grid">
-        <a href="/products?category=1" class="cat-hero-card">
-            <div class="cat-hero-img" style="background-image:url('/assets/cat-ao.jpg')"></div>
-            <div class="cat-hero-label">
-                <span class="cat-hero-sub">ATELIER COLLECTION</span>
-                <span class="cat-hero-name">ÁO</span>
-                <span class="cat-hero-cta">SHOP NOW →</span>
-            </div>
-        </a>
-        <a href="/products?category=2" class="cat-hero-card">
-            <div class="cat-hero-img" style="background-image:url('/assets/cat-quan.jpg')"></div>
-            <div class="cat-hero-label">
-                <span class="cat-hero-sub">ATELIER COLLECTION</span>
-                <span class="cat-hero-name">QUẦN</span>
-                <span class="cat-hero-cta">SHOP NOW →</span>
-            </div>
-        </a>
-        <a href="/products?category=4" class="cat-hero-card">
-            <div class="cat-hero-img" style="background-image:url('/assets/cat-phukien.jpg')"></div>
-            <div class="cat-hero-label">
-                <span class="cat-hero-sub">ATELIER COLLECTION</span>
-                <span class="cat-hero-name">PHỤ KIỆN</span>
-                <span class="cat-hero-cta">SHOP NOW →</span>
-            </div>
-        </a>
-    </div>
-</section>
 
 <!-- NEW ARRIVAL / BEST SELLER CAROUSEL -->
 <section class="section section-carousel">

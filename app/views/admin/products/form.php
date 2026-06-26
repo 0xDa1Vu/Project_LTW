@@ -3,7 +3,8 @@ use App\Core\Csrf;
 $isEdit = $product !== null;
 $action = $isEdit ? '/admin/products/update/' . (int) $product['id'] : '/admin/products/store';
 ?>
-<form action="<?= $action ?>" method="post" enctype="multipart/form-data" class="admin-form">
+<div class="admin-form">
+<form id="main-form" action="<?= $action ?>" method="post" enctype="multipart/form-data">
     <?= Csrf::field() ?>
     <div class="form-grid">
         <label>Tên sản phẩm
@@ -35,7 +36,14 @@ $action = $isEdit ? '/admin/products/update/' . (int) $product['id'] : '/admin/p
                 <option value="hidden" <?= ($product['status'] ?? '') === 'hidden' ? 'selected' : '' ?>>Ẩn</option>
             </select>
         </label>
+        <label>Hiển thị ở New Arrival (trang chủ)
+            <select name="is_featured">
+                <option value="1" <?= !empty($product['is_featured']) ? 'selected' : '' ?>>Hiển thị</option>
+                <option value="0" <?= empty($product['is_featured']) ? 'selected' : '' ?>>Không hiển thị</option>
+            </select>
+        </label>
     </div>
+
     <label>Mô tả
         <textarea name="description" rows="4"><?= e($product['description'] ?? '') ?></textarea>
     </label>
@@ -59,18 +67,63 @@ $action = $isEdit ? '/admin/products/update/' . (int) $product['id'] : '/admin/p
     </table>
     <button type="button" class="btn btn-outline" id="addVariantRow">+ Thêm biến thể</button>
 
+    <!-- Hình ảnh -->
     <h3>Hình ảnh</h3>
-    <?php if (!empty($images)): ?>
-        <div class="image-preview-row">
-            <?php foreach ($images as $img): ?>
-                <img src="<?= e($img['image_url']) ?>" alt="">
-            <?php endforeach; ?>
-        </div>
-    <?php endif; ?>
-    <input type="file" name="images[]" multiple accept="image/*">
-
-    <div class="form-footer">
-        <button type="submit" class="btn btn-dark"><?= $isEdit ? 'Cập nhật' : 'Thêm mới' ?></button>
-        <a href="/admin/products" class="btn btn-outline">Huỷ</a>
-    </div>
 </form>
+
+<!-- Quản lý ảnh hiện có — NGOÀI form chính để tránh nested form -->
+<?php if (!empty($images)): ?>
+<div class="image-manage-row" id="sortableImages">
+    <?php foreach ($images as $img): ?>
+    <div class="image-manage-item <?= $img['is_primary'] ? 'is-primary' : '' ?>" data-id="<?= (int)$img['id'] ?>">
+        <img src="<?= e($img['image_url']) ?>" alt="">
+        <?php if ($img['is_primary']): ?>
+            <span class="img-badge">Chính</span>
+        <?php endif; ?>
+        <div class="img-actions">
+            <?php if (!$img['is_primary']): ?>
+            <form method="post" action="/admin/products/image/primary/<?= (int) $img['id'] ?>">
+                <?= Csrf::field() ?>
+                <button type="submit" class="img-btn img-btn-primary" title="Đặt làm ảnh chính">⭐</button>
+            </form>
+            <?php endif; ?>
+            <form method="post" action="/admin/products/image/delete/<?= (int) $img['id'] ?>"
+                  onsubmit="return confirm('Xoá ảnh này?')">
+                <?= Csrf::field() ?>
+                <button type="submit" class="img-btn img-btn-delete" title="Xoá ảnh">✕</button>
+            </form>
+        </div>
+    </div>
+    <?php endforeach; ?>
+</div>
+<?php endif; ?>
+
+<!-- Choose Files + nút Cập nhật — dùng form="main-form" để liên kết vào form chính -->
+<label class="upload-label">
+    <span>+ Thêm ảnh mới</span>
+    <input type="file" name="images[]" multiple accept="image/*" form="main-form">
+</label>
+<div class="form-footer">
+    <button type="submit" form="main-form" class="btn btn-dark"><?= $isEdit ? 'Cập nhật' : 'Thêm mới' ?></button>
+    <a href="/admin/products" class="btn btn-outline">Huỷ</a>
+</div>
+</div><!-- /.admin-form -->
+
+<?php if (!empty($images)): ?>
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
+<script>
+Sortable.create(document.getElementById('sortableImages'), {
+    animation: 150,
+    ghostClass: 'sortable-ghost',
+    onEnd() {
+        const ids = [...document.querySelectorAll('#sortableImages [data-id]')]
+            .map(el => el.dataset.id);
+        fetch('/admin/products/image/reorder', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ ids })
+        });
+    }
+});
+</script>
+<?php endif; ?>

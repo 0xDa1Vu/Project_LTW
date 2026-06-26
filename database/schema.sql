@@ -48,6 +48,7 @@ CREATE TABLE products (
     brand       VARCHAR(120),
     status      VARCHAR(20) NOT NULL DEFAULT 'active'
                 CHECK (status IN ('active', 'hidden')),
+    is_featured BOOLEAN NOT NULL DEFAULT false,
     created_at  TIMESTAMP NOT NULL DEFAULT now()
 );
 CREATE INDEX idx_products_category ON products(category_id);
@@ -149,3 +150,17 @@ CREATE TABLE payments (
     created_at   TIMESTAMP NOT NULL DEFAULT now()
 );
 CREATE INDEX idx_payments_order ON payments(order_id);
+
+-- ---------------------------------------------------------------------
+CREATE TABLE coupons (
+    id           SERIAL PRIMARY KEY,
+    code         VARCHAR(50) NOT NULL UNIQUE,
+    type         VARCHAR(10) NOT NULL DEFAULT 'percent' CHECK (type IN ('percent','fixed')),
+    value        NUMERIC(12,2) NOT NULL,
+    min_order    NUMERIC(12,2) NOT NULL DEFAULT 0,
+    max_uses     INT,
+    used_count   INT NOT NULL DEFAULT 0,
+    expires_at   TIMESTAMP,
+    is_active    BOOLEAN NOT NULL DEFAULT true,
+    created_at   TIMESTAMP NOT NULL DEFAULT now()
+);

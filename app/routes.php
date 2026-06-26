@@ -9,6 +9,7 @@ use App\Controllers\AuthController;
 use App\Controllers\AccountController;
 use App\Controllers\ReviewController;
 use App\Controllers\PaymentController;
+use App\Controllers\CouponController;
 use App\Controllers\Admin\DashboardController;
 use App\Controllers\Admin\ProductController as AdminProduct;
 use App\Controllers\Admin\CategoryController as AdminCategory;
@@ -59,6 +60,8 @@ $router->post('/review', [ReviewController::class, 'store']);
 $router->get('/payment/sepay/{id}', [PaymentController::class, 'sepayShow']);
 $router->get('/payment/sepay/check/{id}', [PaymentController::class, 'sepayCheck']);
 $router->post('/payment/sepay/webhook', [PaymentController::class, 'sepayWebhook']);
+$router->post('/payment/method/{id}', [PaymentController::class, 'changeMethod']);
+$router->post('/coupon/apply', [CouponController::class, 'apply']);
 
 // ---- Admin ----
 $router->get('/admin', [DashboardController::class, 'index']);
@@ -70,6 +73,9 @@ $router->post('/admin/products/store', [AdminProduct::class, 'store']);
 $router->get('/admin/products/edit/{id}', [AdminProduct::class, 'edit']);
 $router->post('/admin/products/update/{id}', [AdminProduct::class, 'update']);
 $router->post('/admin/products/delete/{id}', [AdminProduct::class, 'destroy']);
+$router->post('/admin/products/image/reorder', [AdminProduct::class, 'reorderImages']);
+$router->post('/admin/products/image/delete/{id}', [AdminProduct::class, 'deleteImage']);
+$router->post('/admin/products/image/primary/{id}', [AdminProduct::class, 'setPrimaryImage']);
 
 $router->get('/admin/categories', [AdminCategory::class, 'index']);
 $router->post('/admin/categories/store', [AdminCategory::class, 'store']);

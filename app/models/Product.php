@@ -90,7 +90,7 @@ class Product extends Model
     public function featured(int $limit = 8): array
     {
         $sql = "SELECT p.*, " . self::PRIMARY_IMAGE_SQL . "
-                FROM products p WHERE p.status = 'active'
+                FROM products p WHERE p.status = 'active' AND p.is_featured = true
                 ORDER BY p.created_at DESC LIMIT :lim";
         $stmt = $this->db->prepare($sql);
         $stmt->bindValue(':lim', $limit, \PDO::PARAM_INT);
@@ -158,6 +158,7 @@ class Product extends Model
             'sale_price'  => $d['sale_price'] !== '' ? $d['sale_price'] : null,
             'brand'       => $d['brand'] ?? null,
             'status'      => $d['status'] ?? 'active',
+            'is_featured' => $d['is_featured'] ?? false,
         ]);
     }
 

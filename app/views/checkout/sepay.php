@@ -18,11 +18,7 @@
           </div>
         </div>
         <div class="sp2-status-steps">
-          <span class="sp2-step sp2-step-done">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M8 12l3 3 5-5"/></svg>
-            Đặt hàng thành công
-          </span>
-          <span class="sp2-step-time">vài giây trước</span>
+          <span class="sp2-step-time">Đặt hàng vài giây trước</span>
         </div>
       </div>
 
@@ -41,7 +37,7 @@
           <div class="sp2-pay-row"><span>Phương thức</span><span>Chuyển khoản qua QR - <?= e($bank) ?></span></div>
         </div>
 
-        <button type="button" class="sp2-btn-primary" id="sp2ModalBtn">Thanh toán</button>
+        <button type="button" class="sp2-btn-outline" id="sp2ModalBtn">Đổi phương thức</button>
 
         <!-- Nội dung CK + QR to -->
         <div class="sp2-ck-box">
@@ -92,6 +88,14 @@
         <div class="sp2-addr-line"><?= e($order['shipping_address']) ?></div>
       </div>
 
+      <!-- Card 5: Hoàn tất -->
+      <div class="sp2-card" style="text-align:center;padding:1.5rem 1.4rem">
+        <p style="font-size:.9rem;color:#555;margin:0 0 1rem">Đã chuyển khoản thành công? Bấm xác nhận để hoàn tất đơn hàng.</p>
+        <button type="button" class="sp2-btn-primary" id="sepayCheckBtn" style="margin:0">
+          Tôi đã thanh toán — Hoàn tất đơn hàng
+        </button>
+      </div>
+
     </div><!-- /sp2-main -->
 
     <!-- RIGHT: sidebar -->
@@ -111,7 +115,7 @@
           </div>
           <div class="sp2-item-info">
             <div class="sp2-item-name"><?= e($it['product_name']) ?></div>
-            <div class="sp2-item-meta">SIZE <?= e($it['size']) ?></div>
+            <div class="sp2-item-meta"><?= e($it['variant_label'] ?? '') ?></div>
           </div>
           <div class="sp2-item-price"><?= vnd($it['price'] * $it['quantity']) ?></div>
         </div>
@@ -142,12 +146,19 @@
       <button type="button" class="sp2-modal-close" id="sp2ModalClose">✕</button>
     </div>
     <div class="sp2-modal-body">
-      <label class="sp2-modal-option sp2-modal-option-active">
+      <label class="sp2-modal-option sp2-modal-option-active" id="sp2OptSepay">
         <input type="radio" name="modal_method" value="sepay" checked>
         <span class="sp2-modal-opt-icon">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><path d="M14 14h3v3m0 4h4v-4m-4 0h4"/></svg>
         </span>
         <span>Chuyển khoản qua QR - MB</span>
+      </label>
+      <label class="sp2-modal-option" id="sp2OptCod" style="margin-top:.75rem">
+        <input type="radio" name="modal_method" value="cod">
+        <span class="sp2-modal-opt-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13" rx="1"/><path d="M16 8h4l3 5v3h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+        </span>
+        <span>Thanh toán khi nhận hàng (COD)</span>
       </label>
     </div>
     <button type="button" class="sp2-modal-confirm" id="sp2ModalConfirm">Xác nhận</button>
@@ -170,9 +181,30 @@ document.querySelectorAll('.sp2-copy-btn').forEach(btn => {
 const modal   = document.getElementById('sp2Modal');
 const openBtn = document.getElementById('sp2ModalBtn');
 const closeBtn= document.getElementById('sp2ModalClose');
-const confirm = document.getElementById('sp2ModalConfirm');
-if (openBtn)  openBtn.addEventListener('click', () => { modal.hidden = false; });
-if (closeBtn) closeBtn.addEventListener('click', () => { modal.hidden = true; });
-if (confirm)  confirm.addEventListener('click', () => { modal.hidden = true; });
-if (modal)    modal.addEventListener('click', e => { if (e.target === modal) modal.hidden = true; });
+const confirmBtn = document.getElementById('sp2ModalConfirm');
+const orderId = <?= (int) $order['id'] ?>;
+
+// highlight option khi chọn
+document.querySelectorAll('.sp2-modal-option').forEach(label => {
+  label.querySelector('input').addEventListener('change', () => {
+    document.querySelectorAll('.sp2-modal-option').forEach(l => l.classList.remove('sp2-modal-option-active'));
+    label.classList.add('sp2-modal-option-active');
+  });
+});
+
+if (openBtn)     openBtn.addEventListener('click', () => { modal.hidden = false; });
+if (closeBtn)    closeBtn.addEventListener('click', () => { modal.hidden = true; });
+if (modal)       modal.addEventListener('click', e => { if (e.target === modal) modal.hidden = true; });
+if (confirmBtn)  confirmBtn.addEventListener('click', () => {
+  const method = document.querySelector('input[name="modal_method"]:checked')?.value;
+  if (!method) return;
+  const form = document.createElement('form');
+  form.method = 'POST';
+  form.action = '/payment/method/' + orderId;
+  const input = document.createElement('input');
+  input.type = 'hidden'; input.name = 'method'; input.value = method;
+  form.appendChild(input);
+  document.body.appendChild(form);
+  form.submit();
+});
 </script>
