@@ -2,8 +2,6 @@
 .env
 
 # Ảnh do admin upload lúc chạy
-/public/uploads/*
-!/public/uploads/.gitkeep
 
 # OS / editor
 .DS_Store

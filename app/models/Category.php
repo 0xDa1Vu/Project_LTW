@@ -36,4 +36,29 @@ class Category extends Model
     {
         return $this->db->query('SELECT * FROM categories ORDER BY name')->fetchAll();
     }
+
+    /** Trả về mảng danh mục cha, mỗi cha có key 'children' chứa các con */
+    public function allGrouped(): array
+    {
+        $rows = $this->db->query(
+            'SELECT * FROM categories ORDER BY parent_id NULLS FIRST, name'
+        )->fetchAll();
+
+        $parents = [];
+        $children = [];
+        foreach ($rows as $row) {
+            if ($row['parent_id'] === null) {
+                $row['children'] = [];
+                $parents[$row['id']] = $row;
+            } else {
+                $children[(int)$row['parent_id']][] = $row;
+            }
+        }
+        foreach ($children as $pid => $kids) {
+            if (isset($parents[$pid])) {
+                $parents[$pid]['children'] = $kids;
+            }
+        }
+        return array_values($parents);
+    }
 }

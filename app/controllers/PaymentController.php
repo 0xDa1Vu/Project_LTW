@@ -15,9 +15,8 @@ class PaymentController extends Controller
 {
     public function vnpayCreate(): void
     {
-        Auth::require();
         $orderId = (int) ($_GET['order_id'] ?? 0);
-        $order = (new Order())->findForUser($orderId, Auth::id());
+        $order = $this->findOrderForCurrentUser($orderId);
         if (!$order) { (new HomeController())->notFound(); return; }
 
         $tmnCode = cfg('vnpay.tmn_code');
@@ -109,9 +108,8 @@ class PaymentController extends Controller
     /** Trang hiển thị mã QR VietQR + hướng dẫn, chờ thanh toán. */
     public function sepayShow(string $id): void
     {
-        Auth::require();
         $orderId = (int) $id;
-        $order = (new Order())->findForUser($orderId, Auth::id());
+        $order = $this->findOrderForCurrentUser($orderId);
         if (!$order) { (new HomeController())->notFound(); return; }
 
         // Đã thanh toán rồi thì về trang thành công luôn.
@@ -137,6 +135,7 @@ class PaymentController extends Controller
         $this->view('checkout/sepay', [
             'title'       => 'Chuyển khoản QR — Đơn #' . $orderId,
             'order'       => $order,
+            'items'       => (new \App\Models\Order())->items($orderId),
             'amount'      => $amount,
             'content'     => $content,
             'qrUrl'       => $qrUrl,
@@ -219,9 +218,8 @@ class PaymentController extends Controller
      */
     public function sepayCheck(string $id): void
     {
-        Auth::require();
         $orderId = (int) $id;
-        $order = (new Order())->findForUser($orderId, Auth::id());
+        $order = (new Order())->find($orderId);
         if (!$order) {
             $this->json(['paid' => false, 'message' => 'Không tìm thấy đơn.'], 404);
         }
@@ -232,6 +230,17 @@ class PaymentController extends Controller
                 ? 'Đã nhận thanh toán! Đơn hàng được xác nhận.'
                 : 'Chưa nhận được chuyển khoản. Vui lòng đợi vài giây sau khi chuyển và thử lại.',
         ]);
+    }
+
+    /** Tìm đơn hàng cho user đang đăng nhập hoặc guest (qua session). */
+    private function findOrderForCurrentUser(int $orderId): ?array
+    {
+        $orderModel = new Order();
+        if (Auth::id()) {
+            return $orderModel->findForUser($orderId, Auth::id());
+        }
+        $guestId = $_SESSION['guest_order_id'] ?? null;
+        return ($guestId === $orderId) ? $orderModel->find($orderId) : null;
     }
 
     /** Dò mã đơn từ nội dung CK, vd "DH12" -> 12. Khớp tiền tố cấu hình. */

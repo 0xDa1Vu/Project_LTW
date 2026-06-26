@@ -91,6 +91,58 @@
     onScroll();
   }
 
+  // ---- 6. Carousel tabs (New Arrival / Best Seller) ----
+  var carouselTabs = document.querySelectorAll('.carousel-tab');
+  if (carouselTabs.length) {
+    carouselTabs.forEach(function (tab) {
+      tab.addEventListener('click', function () {
+        carouselTabs.forEach(function (t) { t.classList.remove('active'); });
+        tab.classList.add('active');
+        var target = tab.getAttribute('data-tab');
+        document.getElementById('tabNew').hidden = (target !== 'new');
+        document.getElementById('tabBest').hidden = (target !== 'best');
+      });
+    });
+  }
+
+  // ---- 7. Carousel prev/next ----
+  function initCarousel(wrapperId, trackId) {
+    var wrapper = document.getElementById(wrapperId);
+    var track = document.getElementById(trackId);
+    if (!wrapper || !track) return;
+    var cards = track.querySelectorAll('.product-card');
+    if (!cards.length) return;
+    var idx = 0;
+
+    function visibleCount() {
+      if (window.innerWidth <= 680) return 1;
+      if (window.innerWidth <= 980) return 2;
+      return 4;
+    }
+
+    function slide() {
+      var pct = (100 / visibleCount()) * idx;
+      track.style.transform = 'translateX(-' + pct + '%)';
+    }
+
+    var prev = wrapper.querySelector('.carousel-prev');
+    var next = wrapper.querySelector('.carousel-next');
+    var max = cards.length - visibleCount();
+
+    if (prev) prev.addEventListener('click', function () {
+      idx = Math.max(0, idx - 1);
+      slide();
+    });
+    if (next) next.addEventListener('click', function () {
+      max = cards.length - visibleCount();
+      idx = Math.min(max, idx + 1);
+      slide();
+    });
+    window.addEventListener('resize', function () { idx = 0; slide(); }, { passive: true });
+  }
+  initCarousel('tabNew', 'trackNew');
+  initCarousel('tabBest', 'trackBest');
+
   // ---- 5. Form lọc: submit ngay khi đổi select ----
   var filterForm = document.getElementById('filterForm');
   if (filterForm) {

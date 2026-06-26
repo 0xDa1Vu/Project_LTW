@@ -18,10 +18,33 @@ $flash = Session::takeFlash();
     <div class="container header-inner">
         <button class="nav-toggle" id="navToggle" aria-label="Mở menu">☰</button>
         <nav class="main-nav" id="mainNav">
-            <a href="/products">SHOP</a>
-            <a href="/about">ABOUT</a>
-            <a href="/care">WHENEVER CARE</a>
-            <a href="/faq">FAQ</a>
+            <div class="nav-item nav-has-mega">
+                <a href="/products" class="nav-link">SHOP</a>
+                <div class="mega-menu">
+                    <div class="mega-col">
+                        <a href="/products?category=1" class="mega-heading">ÁO</a>
+                        <a href="/products?category=6">Áo thun</a>
+                        <a href="/products?category=7">Áo sơ mi</a>
+                        <a href="/products?category=8">Áo khoác</a>
+                        <a href="/products?category=9">Hoodie</a>
+                    </div>
+                    <div class="mega-col">
+                        <a href="/products?category=2" class="mega-heading">QUẦN</a>
+                        <a href="/products?category=10">Quần jean</a>
+                        <a href="/products?category=11">Quần jogger</a>
+                        <a href="/products?category=12">Quần short</a>
+                    </div>
+                    <div class="mega-col">
+                        <a href="/products?category=4" class="mega-heading">PHỤ KIỆN</a>
+                        <a href="/products?category=13">Mũ</a>
+                        <a href="/products?category=14">Túi</a>
+                        <a href="/products?category=15">Tất</a>
+                    </div>
+                </div>
+            </div>
+            <a href="/about" class="nav-link">ABOUT</a>
+            <a href="/care" class="nav-link">WHENEVER CARE</a>
+            <a href="/faq" class="nav-link">FAQ</a>
         </nav>
         <a href="/" class="logo">ATELIER</a>
         <div class="header-actions">
@@ -30,6 +53,7 @@ $flash = Session::takeFlash();
                 <div class="dropdown">
                     <button class="dropdown-btn header-link">ACCOUNT</button>
                     <div class="dropdown-menu">
+                      <div class="dropdown-menu-inner">
                         <a href="/account">Tài khoản</a>
                         <a href="/account/orders">Đơn hàng</a>
                         <?php if (Auth::isAdmin()): ?>
@@ -39,6 +63,7 @@ $flash = Session::takeFlash();
                             <?= \App\Core\Csrf::field() ?>
                             <button type="submit" class="link-btn">Đăng xuất</button>
                         </form>
+                      </div>
                     </div>
                 </div>
             <?php else: ?>

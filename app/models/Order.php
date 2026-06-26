@@ -20,6 +20,7 @@ class Order extends Model
             foreach ($items as $it) {
                 $total += $it['price'] * $it['quantity'];
             }
+            $total += 30000; // phí vận chuyển cố định
 
             $orderId = $this->insert([
                 'user_id'          => $info['user_id'],

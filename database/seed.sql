@@ -17,9 +17,19 @@ INSERT INTO users (name, email, password_hash, role, phone, address) VALUES
 INSERT INTO categories (name, slug) VALUES
   ('Áo', 'ao'),
   ('Quần', 'quan'),
-  ('Đầm', 'dam'),
-  ('Phụ kiện', 'phu-kien'),
-  ('Giày', 'giay');
+  ('Phụ kiện', 'phu-kien');
+
+INSERT INTO categories (name, slug, parent_id) VALUES
+  ('Áo thun', 'ao-thun', 1),
+  ('Áo sơ mi', 'ao-so-mi', 1),
+  ('Áo khoác', 'ao-khoac', 1),
+  ('Hoodie', 'hoodie', 1),
+  ('Quần jean', 'quan-jean', 2),
+  ('Quần jogger', 'quan-jogger', 2),
+  ('Quần short', 'quan-short', 2),
+  ('Mũ', 'mu', 3),
+  ('Túi', 'tui', 3),
+  ('Tất', 'tat', 3);
 
 -- ---- San pham (30) ----
 INSERT INTO products (category_id, name, slug, description, price, sale_price, brand, status) VALUES

@@ -1,11 +1,9 @@
-<!-- HERO VIDEO full-width -->
 <?php
-// Chỉ render <video> nếu hero.mp4 thực sự tồn tại; nếu không, nền gradient (.hero)
-// + poster SVG hiển thị đẹp như banner tĩnh.
 $heroVideo = dirname(__DIR__, 3) . '/public/assets/hero.mp4';
-// bodyClass 'home' để header trong suốt đè lên video (xem .home .site-header trong CSS)
 $bodyClass = 'home';
 ?>
+
+<!-- HERO VIDEO -->
 <section class="hero">
     <?php if (is_file($heroVideo)): ?>
         <video class="hero-video" autoplay muted loop playsinline poster="/assets/hero-poster.svg">
@@ -22,34 +20,136 @@ $bodyClass = 'home';
     </div>
 </section>
 
-<!-- Danh mục -->
-<section class="container section">
-    <h2 class="section-title">Danh mục</h2>
-    <div class="category-grid">
-        <?php foreach ($categories as $c): ?>
-            <a href="/products?category=<?= (int) $c['id'] ?>" class="category-card">
-                <span><?= e($c['name']) ?></span>
-            </a>
-        <?php endforeach; ?>
+<!-- SHOP BY CATEGORY -->
+<section class="section-cat-hero">
+    <div class="cat-hero-grid">
+        <a href="/products?category=1" class="cat-hero-card">
+            <div class="cat-hero-img" style="background-image:url('/assets/cat-ao.jpg')"></div>
+            <div class="cat-hero-label">
+                <span class="cat-hero-sub">ATELIER COLLECTION</span>
+                <span class="cat-hero-name">ÁO</span>
+                <span class="cat-hero-cta">SHOP NOW →</span>
+            </div>
+        </a>
+        <a href="/products?category=2" class="cat-hero-card">
+            <div class="cat-hero-img" style="background-image:url('/assets/cat-quan.jpg')"></div>
+            <div class="cat-hero-label">
+                <span class="cat-hero-sub">ATELIER COLLECTION</span>
+                <span class="cat-hero-name">QUẦN</span>
+                <span class="cat-hero-cta">SHOP NOW →</span>
+            </div>
+        </a>
+        <a href="/products?category=4" class="cat-hero-card">
+            <div class="cat-hero-img" style="background-image:url('/assets/cat-phukien.jpg')"></div>
+            <div class="cat-hero-label">
+                <span class="cat-hero-sub">ATELIER COLLECTION</span>
+                <span class="cat-hero-name">PHỤ KIỆN</span>
+                <span class="cat-hero-cta">SHOP NOW →</span>
+            </div>
+        </a>
     </div>
 </section>
 
-<!-- Sản phẩm mới -->
-<section class="container section">
-    <h2 class="section-title">Sản phẩm mới</h2>
-    <div class="product-grid">
-        <?php foreach ($featured as $p): ?>
-            <?php require dirname(__DIR__) . '/partials/product_card.php'; ?>
-        <?php endforeach; ?>
+<!-- NEW ARRIVAL / BEST SELLER CAROUSEL -->
+<section class="section section-carousel">
+    <div class="carousel-header container">
+        <div class="carousel-tabs">
+            <button class="carousel-tab active" data-tab="new">NEW ARRIVAL</button>
+            <button class="carousel-tab" data-tab="best">BEST SELLER</button>
+        </div>
+        <a href="/products" class="btn-view-all">Xem tất cả →</a>
+    </div>
+
+    <!-- New Arrival -->
+    <div class="carousel-wrapper" id="tabNew">
+        <button class="carousel-btn carousel-prev" aria-label="Trước">&#8249;</button>
+        <div class="carousel-track-outer">
+            <div class="carousel-track" id="trackNew">
+                <?php foreach ($featured as $p): ?>
+                    <?php require dirname(__DIR__) . '/partials/product_card.php'; ?>
+                <?php endforeach; ?>
+            </div>
+        </div>
+        <button class="carousel-btn carousel-next" aria-label="Tiếp">&#8250;</button>
+    </div>
+
+    <!-- Best Seller -->
+    <div class="carousel-wrapper" id="tabBest" hidden>
+        <button class="carousel-btn carousel-prev" aria-label="Trước">&#8249;</button>
+        <div class="carousel-track-outer">
+            <div class="carousel-track" id="trackBest">
+                <?php foreach ($bestSellers as $p): ?>
+                    <?php require dirname(__DIR__) . '/partials/product_card.php'; ?>
+                <?php endforeach; ?>
+            </div>
+        </div>
+        <button class="carousel-btn carousel-next" aria-label="Tiếp">&#8250;</button>
     </div>
 </section>
 
-<!-- Bán chạy -->
-<section class="container section">
-    <h2 class="section-title">Bán chạy nhất</h2>
-    <div class="product-grid">
-        <?php foreach ($bestSellers as $p): ?>
-            <?php require dirname(__DIR__) . '/partials/product_card.php'; ?>
-        <?php endforeach; ?>
+<!-- LIFESTYLE GRID — ÁO -->
+<section class="section section-lifestyle">
+    <div class="lifestyle-header container">
+        <h2 class="lifestyle-title">ÁO</h2>
+    </div>
+    <div class="lifestyle-grid container">
+        <a href="/products?category=6" class="lifestyle-card">
+            <div class="lifestyle-img" style="background-image:url('/assets/life-ao-thun.jpg')"></div>
+            <p class="lifestyle-caption">Áo thun</p>
+        </a>
+        <a href="/products?category=7" class="lifestyle-card">
+            <div class="lifestyle-img" style="background-image:url('/assets/life-ao-somi.jpg')"></div>
+            <p class="lifestyle-caption">Áo sơ mi</p>
+        </a>
+        <a href="/products?category=8" class="lifestyle-card">
+            <div class="lifestyle-img" style="background-image:url('/assets/life-ao-khoac.jpg')"></div>
+            <p class="lifestyle-caption">Áo khoác</p>
+        </a>
+        <a href="/products?category=9" class="lifestyle-card">
+            <div class="lifestyle-img" style="background-image:url('/assets/life-hoodie.jpg')"></div>
+            <p class="lifestyle-caption">Hoodie</p>
+        </a>
+    </div>
+</section>
+
+<!-- LIFESTYLE GRID — QUẦN -->
+<section class="section section-lifestyle section-lifestyle--alt">
+    <div class="lifestyle-header container">
+        <h2 class="lifestyle-title">QUẦN</h2>
+    </div>
+    <div class="lifestyle-grid container">
+        <a href="/products?category=10" class="lifestyle-card">
+            <div class="lifestyle-img" style="background-image:url('/assets/life-quan-jean.jpg')"></div>
+            <p class="lifestyle-caption">Quần jean</p>
+        </a>
+        <a href="/products?category=11" class="lifestyle-card">
+            <div class="lifestyle-img" style="background-image:url('/assets/life-quan-jogger.jpg')"></div>
+            <p class="lifestyle-caption">Quần jogger</p>
+        </a>
+        <a href="/products?category=12" class="lifestyle-card">
+            <div class="lifestyle-img" style="background-image:url('/assets/life-quan-short.jpg')"></div>
+            <p class="lifestyle-caption">Quần short</p>
+        </a>
+    </div>
+</section>
+
+<!-- LIFESTYLE GRID — PHỤ KIỆN -->
+<section class="section section-lifestyle">
+    <div class="lifestyle-header container">
+        <h2 class="lifestyle-title">PHỤ KIỆN</h2>
+    </div>
+    <div class="lifestyle-grid container">
+        <a href="/products?category=13" class="lifestyle-card">
+            <div class="lifestyle-img" style="background-image:url('/assets/life-mu.jpg')"></div>
+            <p class="lifestyle-caption">Mũ</p>
+        </a>
+        <a href="/products?category=14" class="lifestyle-card">
+            <div class="lifestyle-img" style="background-image:url('/assets/life-tui.jpg')"></div>
+            <p class="lifestyle-caption">Túi</p>
+        </a>
+        <a href="/products?category=15" class="lifestyle-card">
+            <div class="lifestyle-img" style="background-image:url('/assets/life-tat.jpg')"></div>
+            <p class="lifestyle-caption">Tất</p>
+        </a>
     </div>
 </section>

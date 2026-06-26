@@ -12,7 +12,6 @@ class OrderController extends Controller
 {
     public function checkout(): void
     {
-        Auth::require();
         $cart = (new Cart())->current(Auth::id(), session_id());
         $items = (new Cart())->items((int) $cart['id']);
         if (!$items) {
@@ -30,7 +29,6 @@ class OrderController extends Controller
 
     public function place(): void
     {
-        Auth::require();
         Csrf::verify();
 
         $cartModel = new Cart();
@@ -61,16 +59,15 @@ class OrderController extends Controller
             $orderModel = new Order();
             $orderId = $orderModel->placeOrder($info, $items);
             $cartModel->clear((int) $cart['id']);
+            if (!Auth::id()) {
+                $_SESSION['guest_order_id'] = $orderId;
+            }
         } catch (\Throwable $e) {
             Session::flash('error', $e->getMessage());
             $this->redirect('/cart');
             return;
         }
 
-        if ($method === 'vnpay') {
-            // Chuyển sang luồng VNPay (PaymentController dựng URL)
-            $this->redirect('/payment/vnpay/create?order_id=' . $orderId);
-        }
         if ($method === 'sepay') {
             // Chuyển sang trang QR chuyển khoản SePay
             $this->redirect('/payment/sepay/' . $orderId);
@@ -82,13 +79,27 @@ class OrderController extends Controller
 
     public function success(string $id): void
     {
-        Auth::require();
-        $order = (new Order())->findForUser((int) $id, Auth::id());
+        $orderId = (int) $id;
+        $orderModel = new Order();
+
+        if (Auth::id()) {
+            $order = $orderModel->findForUser($orderId, Auth::id());
+        } else {
+            $guestId = $_SESSION['guest_order_id'] ?? null;
+            $order = ($guestId === $orderId) ? $orderModel->find($orderId) : null;
+        }
+
         if (!$order) { (new HomeController())->notFound(); return; }
+
+        // SePay chưa thanh toán → về trang QR
+        if ($order['payment_method'] === 'sepay' && $order['payment_status'] !== 'paid') {
+            $this->redirect('/payment/sepay/' . $orderId);
+        }
+
         $this->view('checkout/success', [
             'title' => 'Đặt hàng thành công',
             'order' => $order,
-            'items' => (new Order())->items((int) $id),
+            'items' => $orderModel->items($orderId),
         ]);
     }
 }

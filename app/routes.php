@@ -55,10 +55,6 @@ $router->post('/account/profile', [AccountController::class, 'updateProfile']);
 // ---- Đánh giá ----
 $router->post('/review', [ReviewController::class, 'store']);
 
-// ---- Thanh toán VNPay ----
-$router->post('/payment/vnpay/create', [PaymentController::class, 'vnpayCreate']);
-$router->get('/payment/vnpay/return', [PaymentController::class, 'vnpayReturn']);
-
 // ---- Thanh toán SePay (chuyển khoản QR) ----
 $router->get('/payment/sepay/{id}', [PaymentController::class, 'sepayShow']);
 $router->get('/payment/sepay/check/{id}', [PaymentController::class, 'sepayCheck']);

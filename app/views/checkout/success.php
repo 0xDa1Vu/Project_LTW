@@ -25,6 +25,8 @@
         </div>
 
         <a href="/products" class="btn btn-dark">Tiếp tục mua sắm</a>
+        <?php if (\App\Core\Auth::id()): ?>
         <a href="/account/orders" class="btn btn-outline">Xem đơn hàng</a>
+        <?php endif; ?>
     </div>
 </section>
