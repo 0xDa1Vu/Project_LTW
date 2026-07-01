@@ -1,8 +1,12 @@
 <?php
-use App\Core\Auth;
 use App\Core\Csrf;
 $price = $product['sale_price'] !== null && $product['sale_price'] !== '' ? $product['sale_price'] : $product['price'];
 ?>
+<div class="styling-breadcrumb container">
+    <a href="/">Home</a> /
+    <a href="/products">Sản phẩm</a> /
+    <span><?= e($product['name']) ?></span>
+</div>
 <section class="container section product-detail">
     <div class="pd-gallery">
         <div class="pd-main-image" style="position:relative">
@@ -192,40 +196,39 @@ $price = $product['sale_price'] !== null && $product['sale_price'] !== '' ? $pro
     </div>
 </section>
 
-<!-- Đánh giá -->
-<section class="container section">
-    <h2 class="section-title">Đánh giá sản phẩm</h2>
+<!-- NEW ARRIVAL / BEST SELLER CAROUSEL -->
+<section class="section section-carousel">
+    <div class="carousel-header container">
+        <div class="carousel-tabs">
+            <button class="carousel-tab active" data-tab="new">NEW ARRIVAL</button>
+            <button class="carousel-tab" data-tab="best">BEST SELLER</button>
+        </div>
+        <a href="/products" class="btn-view-all">Xem tất cả →</a>
+    </div>
 
-    <?php if (Auth::check()): ?>
-        <form action="/review" method="post" class="review-form">
-            <?= Csrf::field() ?>
-            <input type="hidden" name="product_id" value="<?= (int) $product['id'] ?>">
-            <div class="review-stars">
-                <label>Chấm điểm:</label>
-                <select name="rating" required>
-                    <?php for ($i = 5; $i >= 1; $i--): ?>
-                        <option value="<?= $i ?>"><?= str_repeat('★', $i) ?></option>
-                    <?php endfor; ?>
-                </select>
+    <!-- New Arrival -->
+    <div class="carousel-wrapper" data-carousel-panel="new">
+        <button class="carousel-btn carousel-prev" aria-label="Trước">&#8249;</button>
+        <div class="carousel-track-outer">
+            <div class="carousel-track">
+                <?php foreach ($featured as $p): ?>
+                    <?php require dirname(__DIR__) . '/partials/product_card.php'; ?>
+                <?php endforeach; ?>
             </div>
-            <textarea name="comment" placeholder="Chia sẻ cảm nhận của bạn..." rows="3"></textarea>
-            <button type="submit" class="btn btn-dark">Gửi đánh giá</button>
-        </form>
-    <?php else: ?>
-        <p><a href="/login">Đăng nhập</a> để viết đánh giá.</p>
-    <?php endif; ?>
+        </div>
+        <button class="carousel-btn carousel-next" aria-label="Tiếp">&#8250;</button>
+    </div>
 
-    <div class="review-list">
-        <?php if (empty($reviews)): ?>
-            <p class="empty-note">Chưa có đánh giá nào.</p>
-        <?php else: foreach ($reviews as $r): ?>
-            <div class="review-item">
-                <div class="review-head">
-                    <strong><?= e($r['user_name']) ?></strong>
-                    <span class="review-rating"><?= str_repeat('★', (int) $r['rating']) ?></span>
-                </div>
-                <p><?= nl2br(e($r['comment'])) ?></p>
+    <!-- Best Seller -->
+    <div class="carousel-wrapper" data-carousel-panel="best" hidden>
+        <button class="carousel-btn carousel-prev" aria-label="Trước">&#8249;</button>
+        <div class="carousel-track-outer">
+            <div class="carousel-track">
+                <?php foreach ($bestSellers as $p): ?>
+                    <?php require dirname(__DIR__) . '/partials/product_card.php'; ?>
+                <?php endforeach; ?>
             </div>
-        <?php endforeach; endif; ?>
+        </div>
+        <button class="carousel-btn carousel-next" aria-label="Tiếp">&#8250;</button>
     </div>
 </section>

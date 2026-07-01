@@ -27,6 +27,7 @@ class ProductController extends Controller
         Auth::requireRole('admin');
         $this->view('admin/products/form', [
             'title'      => 'Thêm sản phẩm',
+            'backUrl'    => '/admin/products',
             'product'    => null,
             'variants'   => [],
             'images'     => [],
@@ -52,6 +53,7 @@ class ProductController extends Controller
         if (!$product) { $this->redirect('/admin/products'); }
         $this->view('admin/products/form', [
             'title'      => 'Sửa sản phẩm',
+            'backUrl'    => '/admin/products',
             'product'    => $product,
             'variants'   => (new Variant())->forProduct((int) $id),
             'images'     => (new ProductImage())->forProduct((int) $id),

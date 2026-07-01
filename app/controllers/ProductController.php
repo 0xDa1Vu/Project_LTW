@@ -18,8 +18,8 @@ class ProductController extends Controller
             'q'           => $_GET['q'] ?? null,
             'min_price'   => $_GET['min_price'] ?? '',
             'max_price'   => $_GET['max_price'] ?? '',
-            'size'        => $_GET['size'] ?? null,
-            'color'       => $_GET['color'] ?? null,
+            'size'        => $_GET['size'] ?? [],
+            'color'       => $_GET['color'] ?? [],
             'sort'        => $_GET['sort'] ?? '',
             'page'        => $_GET['page'] ?? 1,
             'per_page'    => 12,
@@ -27,12 +27,13 @@ class ProductController extends Controller
         $result = $product->browse($filters);
 
         $this->view('product/index', [
-            'title'      => 'Sản phẩm',
-            'result'     => $result,
-            'filters'    => $filters,
-            'categories' => (new Category())->allOrdered(),
-            'sizes'      => $product->distinctSizes(),
-            'colors'     => $product->distinctColors(),
+            'title'         => 'Sản phẩm',
+            'result'        => $result,
+            'filters'       => $filters,
+            'categories'    => (new Category())->allOrdered(),
+            'sizes'         => $product->distinctSizes(),
+            'colors'        => $product->distinctColors(),
+            'bestSellerIds' => $product->bestSellerIds(),
         ]);
     }
 
@@ -47,12 +48,14 @@ class ProductController extends Controller
         $full = $productModel->withCategory((int) $product['id']);
 
         $this->view('product/show', [
-            'title'    => $product['name'],
-            'product'  => $full,
-            'images'   => (new ProductImage())->forProduct((int) $product['id']),
-            'variants' => (new Variant())->forProduct((int) $product['id']),
-            'reviews'  => (new Review())->forProduct((int) $product['id']),
-            'summary'  => (new Review())->summary((int) $product['id']),
+            'title'       => $product['name'],
+            'product'     => $full,
+            'images'      => (new ProductImage())->forProduct((int) $product['id']),
+            'variants'    => (new Variant())->forProduct((int) $product['id']),
+            'reviews'     => (new Review())->forProduct((int) $product['id']),
+            'summary'     => (new Review())->summary((int) $product['id']),
+            'featured'    => $productModel->featured(12),
+            'bestSellers' => $productModel->bestSellers(12),
         ]);
     }
 }

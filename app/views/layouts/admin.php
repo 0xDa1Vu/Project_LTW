@@ -22,6 +22,7 @@ $flash = Session::takeFlash();
         <a href="/admin/orders">Đơn hàng</a>
         <a href="/admin/users">Người dùng</a>
         <a href="/admin/reviews">Đánh giá</a>
+        <a href="/admin/stylings">Styling</a>
         <a href="/" class="back-site">← Về trang web</a>
     </nav>
 </aside>
@@ -29,7 +30,12 @@ $flash = Session::takeFlash();
     <header class="admin-topbar">
         <button class="admin-menu-toggle" id="adminMenuToggle">☰</button>
         <h1><?= isset($title) ? e($title) : 'Quản trị' ?></h1>
-        <div class="admin-user"><?= e(Session::get('user_name')) ?></div>
+        <div class="admin-topbar-right">
+            <?php if (!empty($backUrl)): ?>
+                <a href="<?= e($backUrl) ?>" class="admin-back-link">← Về danh sách</a>
+            <?php endif; ?>
+            <div class="admin-user"><?= e(Session::get('user_name')) ?></div>
+        </div>
     </header>
 
     <?php if ($flash): ?>

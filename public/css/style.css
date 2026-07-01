@@ -126,28 +126,41 @@ a{color:inherit;text-decoration:none}
 .category-card:hover{background:var(--black);color:#fff;transform:translateY(-3px)}
 
 /* product grid */
-.product-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1.5rem}
-.product-card{transition:.25s}
-.product-card:hover{transform:translateY(-4px)}
-.product-thumb{position:relative;aspect-ratio:3/4;background:var(--gray-1);
-    border-radius:var(--radius);overflow:hidden}
-.product-thumb img{width:100%;height:100%;object-fit:cover;transition:.4s}
-.product-card:hover .product-thumb img{transform:scale(1.05)}
+.product-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:0}
+.product-card{border:1px solid #ECECEC;margin-left:-1px;margin-top:-1px;
+    padding:2rem 1.2rem 1.2rem;box-sizing:border-box}
+.product-thumb{position:relative;aspect-ratio:1/1;background:var(--gray-1);overflow:hidden}
+.product-thumb img{width:100%;height:100%;object-fit:cover;transition:.4s;transform:translateY(0)}
+.product-card:hover .product-thumb img{transform:translateY(-4px) scale(1.05)}
 .thumb-placeholder{width:100%;height:100%;display:grid;place-items:center;color:var(--gray-3)}
 .badge-sale{position:absolute;top:10px;left:10px;background:#c0392b;color:#fff;
     font-size:.7rem;padding:.2rem .5rem;border-radius:3px;letter-spacing:1px}
+.badge-bestseller{position:absolute;top:10px;left:10px;background:#000;color:#fff;
+    font-size:.7rem;padding:.3rem .7rem;letter-spacing:1px;font-weight:600}
 .product-info{padding:.8rem .2rem}
 .product-name{font-size:.98rem;font-weight:500;margin-bottom:.3rem}
 .price-now{font-weight:600}
 .price-old{color:var(--gray-3);text-decoration:line-through;margin-left:.5rem;font-size:.85rem}
 
 /* shop layout */
-.shop-layout{display:grid;grid-template-columns:240px 1fr;gap:2rem;align-items:start}
-.filter-sidebar{position:sticky;top:90px;border:1px solid var(--gray-2);border-radius:var(--radius);padding:1.2rem}
-.filter-group{margin-bottom:1.2rem}
-.filter-group h4{font-size:.9rem;margin-bottom:.5rem}
-.filter-group select,.filter-group input{width:100%;padding:.5rem;border:1px solid var(--gray-2);border-radius:var(--radius)}
-.price-range{display:flex;gap:.5rem}
+.shop-layout{display:grid;grid-template-columns:260px 1fr;gap:3rem;align-items:start}
+.filter-sidebar{padding:0 0 0 2.5rem}
+.shop-main{padding-right:2.5rem}
+.filter-group{border-bottom:1px solid var(--gray-2);padding:1.2rem 0}
+.filter-group:first-of-type{padding-top:0}
+.filter-group summary{font-size:1rem;cursor:pointer;list-style:none;
+    display:flex;align-items:center;justify-content:space-between}
+.filter-group summary::-webkit-details-marker{display:none}
+.filter-group summary::after{content:'⌄';font-size:.9rem;transition:transform .2s}
+.filter-group[open] summary::after{transform:rotate(180deg)}
+.filter-group select{width:100%;padding:.5rem 0;border:none;border-bottom:1px solid var(--gray-2);margin-top:.8rem}
+.checkbox-list{display:flex;flex-direction:column;gap:.6rem;margin-top:1rem}
+.checkbox-item{display:flex;align-items:center;gap:.6rem;font-size:.92rem;cursor:pointer}
+.price-buckets{display:flex;flex-direction:column;gap:.6rem;margin-top:1rem}
+.price-bucket-btn{text-align:left;padding:.6rem .8rem;border:1px solid var(--gray-2);
+    border-radius:var(--radius);background:#fff;cursor:pointer;font:inherit;transition:.2s}
+.price-bucket-btn:hover{border-color:var(--black)}
+.price-bucket-btn.active{background:#000;color:#fff;border-color:#000}
 .shop-toolbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.2rem;color:var(--gray-4)}
 .sort-form select{padding:.5rem;border:1px solid var(--gray-2);border-radius:var(--radius)}
 .pagination{display:flex;gap:.4rem;justify-content:center;margin-top:2rem}
@@ -521,7 +534,7 @@ a{color:inherit;text-decoration:none}
 .cat-hero-img[style*="cat-phukien.jpg"]{background-color:#b8c8b0}
 
 /* ============ CAROUSEL — NEW ARRIVAL / BEST SELLER ============ */
-.section-carousel{padding-top:3rem;padding-bottom:3rem}
+.section-carousel{padding-top:3rem;padding-bottom:1rem}
 .carousel-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:2rem;padding-top:.5rem}
 .carousel-tabs{display:flex;gap:2rem}
 .carousel-tab{background:none;border:none;cursor:pointer;font:inherit;
@@ -536,7 +549,11 @@ a{color:inherit;text-decoration:none}
 .carousel-wrapper{position:relative;overflow:hidden}
 .carousel-track-outer{overflow:hidden;width:100%;padding:0 2rem}
 .carousel-track{display:flex;gap:0;transition:transform .4s cubic-bezier(.4,0,.2,1)}
-.carousel-track .product-card{flex:0 0 25%;min-width:0;padding:0 .6rem;box-sizing:border-box}
+.carousel-track .product-card{flex:0 0 25%;min-width:0;padding:2.5rem 1.2rem 1.2rem;box-sizing:border-box;
+    border:1px solid #ECECEC;margin-left:-1px}
+.carousel-track .product-card:first-child{margin-left:0}
+.carousel-track .product-thumb{border-radius:0}
+.carousel-track .product-info{padding:.8rem 0 1.2rem}
 .carousel-btn{position:absolute;top:50%;transform:translateY(-50%);
     width:42px;height:42px;border-radius:50%;border:1.5px solid #ccc;
     background:#fff;cursor:pointer;font-size:1.3rem;display:grid;place-items:center;
@@ -547,6 +564,87 @@ a{color:inherit;text-decoration:none}
 /* product-card badge cho carousel */
 .carousel-track .badge-new{position:absolute;top:10px;left:10px;background:var(--black);color:#fff;
     font-size:.65rem;padding:.2rem .6rem;letter-spacing:1.5px;font-weight:600}
+
+/* ============ STYLING LOOKBOOK (trang chủ) ============ */
+.section-styling{padding:.5rem 0 2.5rem;background:#fff}
+.styling-header{display:flex;justify-content:space-between;align-items:center;
+    max-width:1700px;margin:0 auto 40px;padding:0 2rem}
+.styling-title{font-size:1rem;font-weight:700;letter-spacing:1.5px;color:var(--black);margin:0}
+
+.section-styling .carousel-track-outer{max-width:1700px;margin:0 auto;padding:0 3rem}
+.section-styling .carousel-track{gap:0;align-items:stretch}
+.section-styling .styling-card{flex:0 0 25%;min-width:0;box-sizing:border-box;
+    padding:0 1.2rem;border:1px solid #ECECEC;margin-left:-1px;
+    display:flex;flex-direction:column;background:#fff;
+    text-align:center;font-family:Inter,Helvetica,Arial,sans-serif;
+    opacity:0;transform:translateY(30px);transition:opacity .6s ease,transform .6s ease}
+.section-styling .styling-card:first-child{margin-left:0}
+.section-styling .styling-card.in-view{opacity:1;transform:translateY(0)}
+.section-styling .styling-card-img{display:block;overflow:hidden;aspect-ratio:3/4}
+.section-styling .styling-card img{width:100%;height:100%;object-fit:contain;background:#fff;display:block;
+    transition:transform .35s ease}
+.section-styling .styling-card-img:hover img{transform:scale(1.02)}
+.section-styling .styling-card-info{padding:32px 0 40px}
+.section-styling .styling-card figcaption{font-size:18px;font-weight:400;line-height:1.5;color:#111;
+    display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.section-styling .styling-view-btn{display:inline-block;margin:14px auto 0;padding:.4rem 2.2rem;
+    background:#000;color:#fff;text-decoration:none;font-size:.78rem;font-weight:500;border:none;
+    transition:background .3s ease}
+.section-styling .styling-view-btn:hover{background:#222}
+
+@media (max-width:980px){
+    .section-styling .styling-card{flex:0 0 calc(50% - 12px)}
+}
+@media (max-width:680px){
+    .section-styling .styling-card{flex:0 0 100%}
+}
+
+/* ============ FANTASY COLLECTION (trang chủ) ============ */
+.section-fantasy{display:flex;align-items:center;background:#fff;gap:3rem;
+    padding:3rem 3rem;box-sizing:border-box}
+.fantasy-media{flex:1 1 50%;min-width:0;aspect-ratio:5/3;overflow:hidden}
+.fantasy-video{width:100%;height:100%;object-fit:cover;display:block}
+.fantasy-content{flex:1 1 50%;display:flex;flex-direction:column;justify-content:center;
+    gap:1.8rem;padding:2rem 3rem;box-sizing:border-box}
+.fantasy-title{font-size:1.3rem;font-weight:500;letter-spacing:1px;color:var(--black);margin:0}
+.fantasy-desc{font-size:1.05rem;line-height:1.9;color:#333;margin:0}
+.fantasy-btn{display:inline-block;align-self:flex-start;padding:.9rem 2.8rem;
+    background:#000;color:#fff;text-decoration:none;font-size:.8rem;font-weight:600;
+    letter-spacing:1px;transition:background .3s ease}
+.fantasy-btn:hover{background:#222}
+
+@media (max-width:900px){
+    .section-fantasy{flex-direction:column;padding:2rem 1.5rem}
+    .fantasy-media{flex:none;width:100%;aspect-ratio:4/3}
+    .fantasy-content{padding:1.5rem 0}
+}
+
+/* ============ STYLING DETAIL PAGE ============ */
+.section-styling-detail{padding:3rem 0 5rem;background:#fff}
+.styling-breadcrumb{font-size:.85rem;color:var(--gray-3);margin-bottom:2rem}
+.styling-breadcrumb a{color:var(--gray-3);text-decoration:none}
+.styling-breadcrumb a:hover{text-decoration:underline}
+.styling-breadcrumb span{color:var(--black)}
+.styling-model-info{text-align:center;font-size:.85rem;color:#111;line-height:2;
+    letter-spacing:.2px;margin-bottom:3rem}
+.styling-detail-track{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:center;
+    gap:48px;max-width:1700px;margin:0 auto}
+.styling-detail-track .styling-card{flex:0 0 calc(25% - 36px);opacity:1;transform:none;cursor:default}
+@media (max-width:980px){
+    .styling-detail-track .styling-card{flex:0 0 calc(50% - 24px)}
+}
+@media (max-width:680px){
+    .styling-detail-track .styling-card{flex:0 0 100%}
+}
+
+@media (max-width:980px){
+    .styling-card{flex:0 0 calc(50% - 24px)}
+    .styling-card img{height:520px}
+}
+@media (max-width:680px){
+    .styling-card{flex:0 0 100%}
+    .styling-card img{height:60vh}
+}
 
 /* ============ LIFESTYLE GRID ============ */
 .section-lifestyle{padding:3rem 0}

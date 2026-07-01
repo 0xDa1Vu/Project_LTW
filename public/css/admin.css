@@ -19,6 +19,7 @@ img{max-width:100%;display:block}
 .admin-topbar h1{font-size:1.2rem;flex:1}
 .admin-menu-toggle{display:none;background:none;border:none;font-size:1.4rem;cursor:pointer}
 .admin-user{font-weight:500;color:var(--gray-4)}
+.admin-topbar-right{display:flex;align-items:center;gap:1rem}
 .admin-content{padding:1.5rem}
 
 .stat-cards{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:1.5rem}
@@ -45,6 +46,8 @@ img{max-width:100%;display:block}
 .link-btn{background:none;border:none;cursor:pointer;color:inherit;font:inherit}
 .link-btn.danger{color:#c0392b}
 
+.admin-back-link{font-size:.9rem;color:var(--gray-4);text-decoration:none}
+.admin-back-link:hover{text-decoration:underline}
 .admin-form{background:#fff;border-radius:var(--radius);padding:1.5rem;box-shadow:var(--shadow);max-width:900px}
 .admin-form label{display:block;margin-bottom:1rem;font-weight:500;font-size:.9rem}
 .admin-form input,.admin-form select,.admin-form textarea{width:100%;padding:.6rem;margin-top:.3rem;

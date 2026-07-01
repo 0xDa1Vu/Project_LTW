@@ -164,3 +164,22 @@ CREATE TABLE coupons (
     is_active    BOOLEAN NOT NULL DEFAULT true,
     created_at   TIMESTAMP NOT NULL DEFAULT now()
 );
+
+-- ---------------------------------------------------------------------
+CREATE TABLE stylings (
+    id         SERIAL PRIMARY KEY,
+    title      VARCHAR(150) NOT NULL,
+    model_info TEXT,
+    sort_order INT NOT NULL DEFAULT 0,
+    created_at TIMESTAMP NOT NULL DEFAULT now(),
+    updated_at TIMESTAMP NOT NULL DEFAULT now()
+);
+
+CREATE TABLE styling_images (
+    id          SERIAL PRIMARY KEY,
+    styling_id  INT NOT NULL REFERENCES stylings(id) ON DELETE CASCADE,
+    image_url   VARCHAR(255) NOT NULL,
+    is_cover    BOOLEAN NOT NULL DEFAULT false,
+    sort_order  INT NOT NULL DEFAULT 0
+);
+CREATE INDEX idx_styling_images_styling ON styling_images(styling_id);

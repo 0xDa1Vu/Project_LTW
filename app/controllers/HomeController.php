@@ -4,6 +4,8 @@ namespace App\Controllers;
 use App\Core\Controller;
 use App\Models\Product;
 use App\Models\Category;
+use App\Models\Styling;
+use App\Models\StylingImage;
 
 class HomeController extends Controller
 {
@@ -11,12 +13,15 @@ class HomeController extends Controller
     {
         $product = new Product();
         $cat = new Category();
+        $stylings = (new Styling())->allOrdered();
         $this->view('home/index', [
             'title'       => 'Trang chủ',
             'featured'    => $product->featured(12),
             'bestSellers' => $product->bestSellers(12),
             'categories'  => $cat->allOrdered(),
             'categoryGroups' => $cat->allGrouped(),
+            'stylings'      => $stylings,
+            'stylingCovers' => (new StylingImage())->coversFor(array_column($stylings, 'id')),
         ]);
     }
 

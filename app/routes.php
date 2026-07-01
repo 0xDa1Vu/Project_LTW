@@ -3,6 +3,7 @@ use App\Core\Router;
 use App\Controllers\HomeController;
 use App\Controllers\PageController;
 use App\Controllers\ProductController;
+use App\Controllers\StylingController;
 use App\Controllers\CartController;
 use App\Controllers\OrderController;
 use App\Controllers\AuthController;
@@ -16,6 +17,7 @@ use App\Controllers\Admin\CategoryController as AdminCategory;
 use App\Controllers\Admin\OrderController as AdminOrder;
 use App\Controllers\Admin\UserController as AdminUser;
 use App\Controllers\Admin\ReviewController as AdminReview;
+use App\Controllers\Admin\StylingController as AdminStyling;
 
 $router = new Router();
 
@@ -29,6 +31,7 @@ $router->get('/faq', [PageController::class, 'faq']);
 
 $router->get('/products', [ProductController::class, 'index']);
 $router->get('/product/{slug}', [ProductController::class, 'show']);
+$router->get('/styling/{id}', [StylingController::class, 'show']);
 
 $router->get('/cart', [CartController::class, 'index']);
 $router->post('/cart/add', [CartController::class, 'add']);
@@ -92,5 +95,15 @@ $router->post('/admin/users/delete/{id}', [AdminUser::class, 'destroy']);
 
 $router->get('/admin/reviews', [AdminReview::class, 'index']);
 $router->post('/admin/reviews/delete/{id}', [AdminReview::class, 'destroy']);
+
+$router->get('/admin/stylings', [AdminStyling::class, 'index']);
+$router->get('/admin/stylings/create', [AdminStyling::class, 'create']);
+$router->post('/admin/stylings/store', [AdminStyling::class, 'store']);
+$router->get('/admin/stylings/edit/{id}', [AdminStyling::class, 'edit']);
+$router->post('/admin/stylings/update/{id}', [AdminStyling::class, 'update']);
+$router->post('/admin/stylings/delete/{id}', [AdminStyling::class, 'destroy']);
+$router->post('/admin/stylings/image/delete/{id}', [AdminStyling::class, 'deleteImage']);
+$router->post('/admin/stylings/image/cover/{id}', [AdminStyling::class, 'setCoverImage']);
+$router->post('/admin/stylings/image/reorder', [AdminStyling::class, 'reorderImages']);
 
 return $router;

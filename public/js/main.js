@@ -92,25 +92,25 @@
   }
 
   // ---- 6. Carousel tabs (New Arrival / Best Seller) ----
-  var carouselTabs = document.querySelectorAll('.carousel-tab');
-  if (carouselTabs.length) {
-    carouselTabs.forEach(function (tab) {
+  document.querySelectorAll('.section-carousel').forEach(function (section) {
+    var tabs = section.querySelectorAll('.carousel-tab');
+    if (!tabs.length) return;
+    tabs.forEach(function (tab) {
       tab.addEventListener('click', function () {
-        carouselTabs.forEach(function (t) { t.classList.remove('active'); });
+        tabs.forEach(function (t) { t.classList.remove('active'); });
         tab.classList.add('active');
         var target = tab.getAttribute('data-tab');
-        document.getElementById('tabNew').hidden = (target !== 'new');
-        document.getElementById('tabBest').hidden = (target !== 'best');
+        section.querySelectorAll('[data-carousel-panel]').forEach(function (panel) {
+          panel.hidden = (panel.getAttribute('data-carousel-panel') !== target);
+        });
       });
     });
-  }
+  });
 
   // ---- 7. Carousel prev/next ----
-  function initCarousel(wrapperId, trackId) {
-    var wrapper = document.getElementById(wrapperId);
-    var track = document.getElementById(trackId);
+  function initCarousel(wrapper, track, cardSelector) {
     if (!wrapper || !track) return;
-    var cards = track.querySelectorAll('.product-card');
+    var cards = track.querySelectorAll(cardSelector || '.product-card');
     if (!cards.length) return;
     var idx = 0;
 
@@ -140,8 +140,24 @@
     });
     window.addEventListener('resize', function () { idx = 0; slide(); }, { passive: true });
   }
-  initCarousel('tabNew', 'trackNew');
-  initCarousel('tabBest', 'trackBest');
+  document.querySelectorAll('.carousel-wrapper[data-carousel-panel]').forEach(function (wrapper) {
+    initCarousel(wrapper, wrapper.querySelector('.carousel-track'));
+  });
+  initCarousel(document.getElementById('stylingWrapper'), document.getElementById('stylingTrack'), '.styling-card');
+
+  // ---- 7b. Styling: fade-up khi scroll vào view ----
+  var stylingCards = document.querySelectorAll('.styling-card');
+  if (stylingCards.length && 'IntersectionObserver' in window) {
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('in-view');
+          io.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.15 });
+    stylingCards.forEach(function (card) { io.observe(card); });
+  }
 
   // ---- 5. Form lọc: submit ngay khi đổi select ----
   var filterForm = document.getElementById('filterForm');

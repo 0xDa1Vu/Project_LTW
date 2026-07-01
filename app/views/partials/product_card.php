@@ -9,7 +9,9 @@ $price = $p['sale_price'] !== null && $p['sale_price'] !== '' ? $p['sale_price']
         <?php else: ?>
             <div class="thumb-placeholder">No image</div>
         <?php endif; ?>
-        <?php if ($p['sale_price'] !== null && $p['sale_price'] !== ''): ?>
+        <?php if (!empty($bestSellerIds) && in_array((int) $p['id'], $bestSellerIds, true)): ?>
+            <span class="badge-bestseller">BEST SELLER</span>
+        <?php elseif ($p['sale_price'] !== null && $p['sale_price'] !== ''): ?>
             <span class="badge-sale">SALE</span>
         <?php endif; ?>
     </div>

@@ -1,5 +1,6 @@
 <?php
 $heroVideo = dirname(__DIR__, 3) . '/public/assets/hero.mp4';
+$fantasyVideo = dirname(__DIR__, 3) . '/public/assets/fantasy.mp4';
 $bodyClass = 'home';
 ?>
 
@@ -32,10 +33,10 @@ $bodyClass = 'home';
     </div>
 
     <!-- New Arrival -->
-    <div class="carousel-wrapper" id="tabNew">
+    <div class="carousel-wrapper" data-carousel-panel="new">
         <button class="carousel-btn carousel-prev" aria-label="Trước">&#8249;</button>
         <div class="carousel-track-outer">
-            <div class="carousel-track" id="trackNew">
+            <div class="carousel-track">
                 <?php foreach ($featured as $p): ?>
                     <?php require dirname(__DIR__) . '/partials/product_card.php'; ?>
                 <?php endforeach; ?>
@@ -45,10 +46,10 @@ $bodyClass = 'home';
     </div>
 
     <!-- Best Seller -->
-    <div class="carousel-wrapper" id="tabBest" hidden>
+    <div class="carousel-wrapper" data-carousel-panel="best" hidden>
         <button class="carousel-btn carousel-prev" aria-label="Trước">&#8249;</button>
         <div class="carousel-track-outer">
-            <div class="carousel-track" id="trackBest">
+            <div class="carousel-track">
                 <?php foreach ($bestSellers as $p): ?>
                     <?php require dirname(__DIR__) . '/partials/product_card.php'; ?>
                 <?php endforeach; ?>
@@ -58,69 +59,50 @@ $bodyClass = 'home';
     </div>
 </section>
 
-<!-- LIFESTYLE GRID — ÁO -->
-<section class="section section-lifestyle">
-    <div class="lifestyle-header container">
-        <h2 class="lifestyle-title">ÁO</h2>
+<?php $stylingsWithCover = array_filter($stylings, fn($s) => !empty($stylingCovers[$s['id']])); ?>
+<?php if (!empty($stylingsWithCover)): ?>
+<!-- STYLING LOOKBOOK -->
+<section class="section section-styling">
+    <div class="styling-header container">
+        <h2 class="styling-title">STYLING</h2>
+        <a href="/products" class="btn-view-all">Xem tất cả →</a>
     </div>
-    <div class="lifestyle-grid container">
-        <a href="/products?category=6" class="lifestyle-card">
-            <div class="lifestyle-img" style="background-image:url('/assets/life-ao-thun.jpg')"></div>
-            <p class="lifestyle-caption">Áo thun</p>
-        </a>
-        <a href="/products?category=7" class="lifestyle-card">
-            <div class="lifestyle-img" style="background-image:url('/assets/life-ao-somi.jpg')"></div>
-            <p class="lifestyle-caption">Áo sơ mi</p>
-        </a>
-        <a href="/products?category=8" class="lifestyle-card">
-            <div class="lifestyle-img" style="background-image:url('/assets/life-ao-khoac.jpg')"></div>
-            <p class="lifestyle-caption">Áo khoác</p>
-        </a>
-        <a href="/products?category=9" class="lifestyle-card">
-            <div class="lifestyle-img" style="background-image:url('/assets/life-hoodie.jpg')"></div>
-            <p class="lifestyle-caption">Hoodie</p>
-        </a>
-    </div>
-</section>
-
-<!-- LIFESTYLE GRID — QUẦN -->
-<section class="section section-lifestyle section-lifestyle--alt">
-    <div class="lifestyle-header container">
-        <h2 class="lifestyle-title">QUẦN</h2>
-    </div>
-    <div class="lifestyle-grid container">
-        <a href="/products?category=10" class="lifestyle-card">
-            <div class="lifestyle-img" style="background-image:url('/assets/life-quan-jean.jpg')"></div>
-            <p class="lifestyle-caption">Quần jean</p>
-        </a>
-        <a href="/products?category=11" class="lifestyle-card">
-            <div class="lifestyle-img" style="background-image:url('/assets/life-quan-jogger.jpg')"></div>
-            <p class="lifestyle-caption">Quần jogger</p>
-        </a>
-        <a href="/products?category=12" class="lifestyle-card">
-            <div class="lifestyle-img" style="background-image:url('/assets/life-quan-short.jpg')"></div>
-            <p class="lifestyle-caption">Quần short</p>
-        </a>
+    <div class="carousel-wrapper" id="stylingWrapper">
+        <button class="carousel-btn carousel-prev" aria-label="Trước">&#8249;</button>
+        <div class="carousel-track-outer">
+            <div class="carousel-track" id="stylingTrack">
+                <?php foreach ($stylingsWithCover as $s): ?>
+                    <figure class="styling-card">
+                        <a href="/styling/<?= (int) $s['id'] ?>" class="styling-card-img">
+                            <img src="<?= e($stylingCovers[$s['id']]) ?>" alt="<?= e($s['title']) ?>" loading="lazy">
+                        </a>
+                        <div class="styling-card-info">
+                            <figcaption><?= e($s['title']) ?></figcaption>
+                            <a href="/styling/<?= (int) $s['id'] ?>" class="styling-view-btn">Xem bộ phối</a>
+                        </div>
+                    </figure>
+                <?php endforeach; ?>
+            </div>
+        </div>
+        <button class="carousel-btn carousel-next" aria-label="Tiếp">&#8250;</button>
     </div>
 </section>
+<?php endif; ?>
 
-<!-- LIFESTYLE GRID — PHỤ KIỆN -->
-<section class="section section-lifestyle">
-    <div class="lifestyle-header container">
-        <h2 class="lifestyle-title">PHỤ KIỆN</h2>
+<!-- FANTASY COLLECTION -->
+<section class="section section-fantasy">
+    <div class="fantasy-media">
+        <?php if (is_file($fantasyVideo)): ?>
+            <video class="fantasy-video" autoplay muted loop playsinline>
+                <source src="/assets/fantasy.mp4" type="video/mp4">
+            </video>
+        <?php else: ?>
+            <img class="fantasy-video" src="/assets/hero-poster.svg" alt="" aria-hidden="true">
+        <?php endif; ?>
     </div>
-    <div class="lifestyle-grid container">
-        <a href="/products?category=13" class="lifestyle-card">
-            <div class="lifestyle-img" style="background-image:url('/assets/life-mu.jpg')"></div>
-            <p class="lifestyle-caption">Mũ</p>
-        </a>
-        <a href="/products?category=14" class="lifestyle-card">
-            <div class="lifestyle-img" style="background-image:url('/assets/life-tui.jpg')"></div>
-            <p class="lifestyle-caption">Túi</p>
-        </a>
-        <a href="/products?category=15" class="lifestyle-card">
-            <div class="lifestyle-img" style="background-image:url('/assets/life-tat.jpg')"></div>
-            <p class="lifestyle-caption">Tất</p>
-        </a>
+    <div class="fantasy-content">
+        <h2 class="fantasy-title">FANTASY COLLECTION.</h2>
+        <p class="fantasy-desc">Fantasy Collection is where imagination meets comfort. Celebrating softness, playfulness, and boundless creativity, the collection brings Hello Kitty's iconic charm into Levents' fantastical universe. Each piece blends everyday comfort with a subtle touch of gentle, expressive, and effortlessly wearable. Designed for dreamers, this collection encourages us to embrace joy, trust ourselves, and follow our dreams, every single day</p>
+        <a href="/products" class="fantasy-btn">XEM THÊM</a>
     </div>
 </section>

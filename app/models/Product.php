@@ -40,12 +40,22 @@ class Product extends Model
             $params['maxp'] = (float) $f['max_price'];
         }
         if (!empty($f['size'])) {
-            $where[] = 'EXISTS (SELECT 1 FROM variants v WHERE v.product_id = p.id AND v.size = :size)';
-            $params['size'] = $f['size'];
+            $sizes = (array) $f['size'];
+            $ph = [];
+            foreach (array_values($sizes) as $i => $v) {
+                $ph[] = ":size$i";
+                $params["size$i"] = $v;
+            }
+            $where[] = 'EXISTS (SELECT 1 FROM variants v WHERE v.product_id = p.id AND v.size IN (' . implode(',', $ph) . '))';
         }
         if (!empty($f['color'])) {
-            $where[] = 'EXISTS (SELECT 1 FROM variants v WHERE v.product_id = p.id AND v.color = :color)';
-            $params['color'] = $f['color'];
+            $colors = (array) $f['color'];
+            $ph = [];
+            foreach (array_values($colors) as $i => $v) {
+                $ph[] = ":color$i";
+                $params["color$i"] = $v;
+            }
+            $where[] = 'EXISTS (SELECT 1 FROM variants v WHERE v.product_id = p.id AND v.color IN (' . implode(',', $ph) . '))';
         }
 
         $whereSql = implode(' AND ', $where);
@@ -158,8 +168,26 @@ class Product extends Model
             'sale_price'  => $d['sale_price'] !== '' ? $d['sale_price'] : null,
             'brand'       => $d['brand'] ?? null,
             'status'      => $d['status'] ?? 'active',
-            'is_featured' => $d['is_featured'] ?? false,
+            'is_featured' => ($d['is_featured'] ?? false) ? 't' : 'f',
         ]);
+    }
+
+    /** ID sản phẩm bán chạy nhất (dùng để gắn badge BEST SELLER) */
+    public function bestSellerIds(int $limit = 8): array
+    {
+        $sql = "SELECT p.id
+                FROM products p
+                JOIN variants v ON v.product_id = p.id
+                LEFT JOIN order_items oi ON oi.variant_id = v.id
+                WHERE p.status = 'active'
+                GROUP BY p.id
+                HAVING COALESCE(SUM(oi.quantity), 0) > 0
+                ORDER BY COALESCE(SUM(oi.quantity), 0) DESC
+                LIMIT :lim";
+        $stmt = $this->db->prepare($sql);
+        $stmt->bindValue(':lim', $limit, \PDO::PARAM_INT);
+        $stmt->execute();
+        return array_map('intval', $stmt->fetchAll(\PDO::FETCH_COLUMN));
     }
 
     /** Danh sách size/color phân biệt để dựng bộ lọc */
