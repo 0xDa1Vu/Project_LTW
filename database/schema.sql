@@ -59,7 +59,8 @@ CREATE TABLE product_images (
     id         SERIAL PRIMARY KEY,
     product_id INT NOT NULL REFERENCES products(id) ON DELETE CASCADE,
     image_url  VARCHAR(255) NOT NULL,
-    is_primary BOOLEAN NOT NULL DEFAULT false
+    is_primary BOOLEAN NOT NULL DEFAULT false,
+    sort_order INT NOT NULL DEFAULT 0
 );
 CREATE INDEX idx_images_product ON product_images(product_id);
 
