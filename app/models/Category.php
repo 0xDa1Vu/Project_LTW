@@ -41,7 +41,7 @@ class Category extends Model
     public function allGrouped(): array
     {
         $rows = $this->db->query(
-            'SELECT * FROM categories ORDER BY parent_id NULLS FIRST, name'
+            'SELECT * FROM categories ORDER BY parent_id, name'
         )->fetchAll();
 
         $parents = [];

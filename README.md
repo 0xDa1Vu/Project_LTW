@@ -7,12 +7,10 @@
 | Thành phần | Lựa chọn |
 |---|---|
 | Backend | **PHP thuần** (8.2), tổ chức **MVC nhẹ** tự xây — không framework |
-| Database | **PostgreSQL 16** truy cập qua **PDO** (prepared statements) |
+| Database | **MySQL** (8.x hoặc MariaDB đi kèm XAMPP) truy cập qua **PDO** (prepared statements) |
 | Frontend | **HTML + CSS + JS thuần**, Chart.js (CDN) cho dashboard |
 | Thanh toán | **COD**, **SePay** (chuyển khoản QR + webhook đối soát tự động), **VNPay** (sandbox) |
-| Triển khai | **Docker Compose** (web Apache + db Postgres + Adminer) |
-
-> ⚠️ **Lưu ý về đề bài:** đề gợi ý dùng MySQL, nhóm chọn **PostgreSQL**. Vì truy cập qua PDO + SQL chuẩn nên dễ port lại nếu cần. Một vài cú pháp đặc thù Postgres được dùng: `ILIKE`, `ON CONFLICT ... DO UPDATE`, `interval`, `JSONB`, `to_char`.
+| Triển khai | **XAMPP** (Apache + MySQL) hoặc **Docker Compose** (web Apache + db MySQL + Adminer) — cả 2 dùng chung code, chạy độc lập không xung đột |
 
 ## Cấu trúc thư mục
 
@@ -35,16 +33,68 @@ project_LTW/
 │   └── views/              # layouts, partials, các trang
 ├── config/config.php       # đọc .env -> hằng số (DB)
 ├── database/
-│   ├── schema.sql          # 11 bảng + CHECK + index + FK
-│   └── seed.sql            # dữ liệu mẫu (chạy tự động lần init đầu)
-├── docker/Dockerfile       # php:8.2-apache + pdo_pgsql + mod_rewrite
-├── docker-compose.yml
+│   ├── mysql_import.sql    # schema + dữ liệu MySQL — dùng file này để import
+│   └── dump_20260703.sql   # backup dump gốc (PostgreSQL) — chỉ để đối chiếu, không dùng để import
+├── docker/Dockerfile       # php:8.2-apache + pdo_mysql + mod_rewrite
+├── docker-compose.yml      # web Apache + db MySQL 8.0 + Adminer
 └── .env.example
 ```
 
-## Chạy nhanh bằng Docker
+## Chạy bằng XAMPP
 
-Yêu cầu: đã cài **Docker Desktop** (có Docker Compose v2).
+Yêu cầu: đã cài **XAMPP** (Apache + MySQL + phpMyAdmin).
+
+> ⚠️ **Bắt buộc: Virtual Host.** App được viết để chạy ở **docroot gốc** (route `/`, `/products`, `/cart`... không có tiền tố). Nếu bạn mở thẳng `http://localhost/project_LTW/public/`, các link/route sẽ **404** vì URI thực tế có tiền tố `/project_LTW/public`. Bắt buộc phải tạo Virtual Host trỏ `DocumentRoot` thẳng vào thư mục `public/` (xem bước 5 bên dưới) — đây không phải bước tuỳ chọn.
+
+### Các bước cài đặt
+
+1. **Copy project vào `htdocs`** của XAMPP, ví dụ `C:\xampp\htdocs\project_LTW` (Windows) hoặc `/Applications/XAMPP/xamppfiles/htdocs/project_LTW` (Mac).
+
+2. **Tạo file cấu hình:**
+   ```bash
+   cp .env.example .env
+   ```
+
+3. Mở **XAMPP Control Panel**, start **Apache** và **MySQL**.
+   > Nếu MySQL không khởi động được (đứng ở "Starting..." rồi tắt), rất có thể máy bạn đã có sẵn MySQL/MariaDB khác chiếm cổng 3306 (MAMP, Homebrew, cài native...). Cách kiểm tra: `lsof -nP -iTCP:3306 -sTCP:LISTEN` (Mac/Linux). Nếu có tiến trình khác đang giữ cổng, đổi cổng MySQL của XAMPP sang cổng khác (vd 3307) trong `xampp/etc/my.cnf` (sửa cả `port` ở mục `[client]` và `[mysqld]`), rồi cập nhật `.env` (`DB_PORT`) cho khớp.
+
+4. Mở **phpMyAdmin** (`http://localhost/phpmyadmin`), tạo database mới tên `fashion_shop`, collation `utf8mb4_general_ci`. Vào database đó → tab **Import** → chọn file `database/mysql_import.sql` → **Go**.
+
+   (Hoặc dòng lệnh, thay `<port>` bằng cổng MySQL thật của bạn — 3306 nếu mặc định:)
+   ```bash
+   mysql -u root -P <port> -h 127.0.0.1 fashion_shop < database/mysql_import.sql
+   ```
+
+5. **Tạo Virtual Host** (bắt buộc — xem cảnh báo ở trên). Thêm vào `xampp/etc/extra/httpd-vhosts.conf`:
+   ```apache
+   <VirtualHost *:80>
+       DocumentRoot "/duong/dan/toi/project_LTW/public"
+       ServerName project-ltw.local
+       <Directory "/duong/dan/toi/project_LTW/public">
+           Options Indexes FollowSymLinks
+           AllowOverride All
+           Require all granted
+       </Directory>
+   </VirtualHost>
+   ```
+   Bỏ comment dòng `Include etc/extra/httpd-vhosts.conf` trong `xampp/etc/httpd.conf` nếu đang bị comment.
+   Thêm vào file hosts của hệ điều hành (`/etc/hosts` trên Mac/Linux, `C:\Windows\System32\drivers\etc\hosts` trên Windows — cần quyền admin):
+   ```
+   127.0.0.1 project-ltw.local
+   ```
+   Restart Apache trong XAMPP Control Panel.
+
+6. Kiểm tra `.env` đã đúng `DB_HOST`, `DB_PORT` (khớp với cổng MySQL thật của bạn), `DB_USER=root`, `DB_PASS=` (để trống nếu không đặt mật khẩu).
+
+7. Truy cập **`http://project-ltw.local/`**.
+
+### Nạp lại dữ liệu (re-import)
+
+`mysql_import.sql` tự `DROP TABLE` trước khi tạo lại, nên chạy lại file này bất cứ lúc nào là an toàn — chỉ cần import lại là schema + dữ liệu về đúng trạng thái ban đầu.
+
+## Chạy bằng Docker
+
+Yêu cầu: đã cài **Docker Desktop** (có Docker Compose v2). Cách này chạy ở docroot gốc nên **không cần** Virtual Host — route hoạt động ngay, giống hệt cách chạy PHP built-in server.
 
 ```bash
 # 1. Tạo file cấu hình từ mẫu
@@ -55,17 +105,17 @@ docker compose up -d --build
 
 # 3. Mở trình duyệt
 #    Storefront : http://localhost:8000
-#    Adminer    : http://localhost:8080   (server: db, user: shop, pass: shop_secret, db: fashion_shop)
+#    Adminer    : http://localhost:8081   (server: db, user: shop, pass: shop_secret, db: fashion_shop)
 ```
 
-`schema.sql` và `seed.sql` được **tự động nạp khi container db khởi tạo lần đầu**.
+`docker-compose.yml` dùng image `mysql:8.0` và tự động import `database/mysql_import.sql` khi container `db` khởi tạo **lần đầu** (volume rỗng). Cổng host của DB là `3308:3306` (khác cổng MySQL của XAMPP/máy host) nên **chạy song song với XAMPP không xung đột** — bạn có thể bật cả 2 cùng lúc, mỗi bên có database riêng độc lập.
 
-### Nạp lại dữ liệu mẫu (re-seed)
+### Nạp lại dữ liệu (re-seed) trong Docker
 
-Init script của Postgres **chỉ chạy khi volume dữ liệu còn trống**. Nếu đã chạy trước đó mà muốn nạp lại schema/seed:
+Init script chỉ chạy khi volume dữ liệu còn trống. Muốn nạp lại từ đầu:
 
 ```bash
-docker compose down -v      # xoá volume pgdata
+docker compose down -v      # xoá volume mysqldata
 docker compose up -d --build
 ```
 
@@ -77,7 +127,7 @@ docker compose up -d --build
 | Khách hàng | `an@shop.test` | `123456` |
 | Khách hàng | `binh@shop.test` | `123456` |
 
-Đăng nhập admin rồi vào **http://localhost:8000/admin** để xem dashboard và quản trị.
+Đăng nhập admin rồi vào **http://project-ltw.local/admin** để xem dashboard và quản trị.
 
 ## Tính năng
 
@@ -113,24 +163,24 @@ Cấu hình SePay trong `.env` (xem `.env.example`): `SEPAY_ACCOUNT_NUMBER`, `SE
 **Thử webhook ở local** (không cần SePay thật) — giả lập một giao dịch tiền vào cho đơn `#<id>`:
 
 ```bash
-curl -X POST http://localhost:8000/payment/sepay/webhook \
+curl -X POST http://project-ltw.local/payment/sepay/webhook \
   -H "Authorization: Apikey <SEPAY_API_KEY>" -H "Content-Type: application/json" \
   -d '{"transferType":"in","transferAmount":<SỐ_TIỀN>,"content":"DH<id>","referenceCode":"FT123"}'
 ```
 
 > File `.env` chứa thông tin nhạy cảm nên **không** được commit (đã có trong `.gitignore`).
 
-## Chạy không cần Docker (tuỳ chọn)
+## Chạy nhanh bằng PHP built-in server (tuỳ chọn, không cần Apache)
 
-Cần PHP 8.2+ (bật `pdo_pgsql`) và PostgreSQL chạy sẵn:
+Cần PHP 8.2+ (bật extension `pdo_mysql`) và MySQL/MariaDB chạy sẵn (XAMPP MySQL hoặc cài riêng):
 
 ```bash
-createdb fashion_shop
-psql -d fashion_shop -f database/schema.sql
-psql -d fashion_shop -f database/seed.sql
-# sửa DB_HOST/DB_PORT trong .env cho khớp Postgres của bạn
+mysql -u root -P <port> -h 127.0.0.1 -e "CREATE DATABASE fashion_shop CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;"
+mysql -u root -P <port> -h 127.0.0.1 fashion_shop < database/mysql_import.sql
+# sửa DB_HOST/DB_PORT trong .env cho khớp MySQL của bạn
 php -S localhost:8000 -t public
 ```
+Cách này chạy đúng ở docroot gốc (`localhost:8000/`) nên route hoạt động bình thường mà không cần Virtual Host.
 
 ## Danh sách chức năng
 
@@ -231,11 +281,11 @@ Auth::requireRole('admin')
 ```
 Browser  →  public/index.php  →  Router  →  Controller
                                                  ↓
-                                            Model (PDO/PostgreSQL)
+                                            Model (PDO/MySQL)
                                                  ↓
                                           View (PHP template)  →  Response HTML
 ```
 
 ---
 
-Đồ án môn Lập trình Web — ATELIER · PHP thuần + PostgreSQL.
+Đồ án môn Lập trình Web — ATELIER · PHP thuần + MySQL.

@@ -5,7 +5,7 @@ use PDO;
 use PDOException;
 
 /**
- * PDO singleton kết nối PostgreSQL. Mọi truy vấn dùng prepared statements.
+ * PDO singleton kết nối MySQL. Mọi truy vấn dùng prepared statements.
  */
 class Database
 {
@@ -17,7 +17,7 @@ class Database
             $cfg = require dirname(__DIR__, 2) . '/config/config.php';
             $db  = $cfg['db'];
             $dsn = sprintf(
-                'pgsql:host=%s;port=%s;dbname=%s',
+                'mysql:host=%s;port=%s;dbname=%s;charset=utf8mb4',
                 $db['host'], $db['port'], $db['name']
             );
             try {

@@ -39,21 +39,21 @@ abstract class Model
     }
 
     /**
-     * Insert mảng cột => giá trị, trả về id mới (RETURNING id của PostgreSQL).
+     * Insert mảng cột => giá trị, trả về id mới (AUTO_INCREMENT của MySQL).
      */
     protected function insert(array $data): int
     {
         $cols = array_keys($data);
         $place = array_map(fn($c) => ":$c", $cols);
         $sql = sprintf(
-            'INSERT INTO %s (%s) VALUES (%s) RETURNING id',
+            'INSERT INTO %s (%s) VALUES (%s)',
             $this->table,
             implode(', ', $cols),
             implode(', ', $place)
         );
         $stmt = $this->db->prepare($sql);
         $stmt->execute($data);
-        return (int) $stmt->fetchColumn();
+        return (int) $this->db->lastInsertId();
     }
 
     /** Update theo id */

@@ -28,7 +28,7 @@ class Product extends Model
             $params['cat'] = (int) $f['category_id'];
         }
         if (!empty($f['q'])) {
-            $where[] = '(p.name ILIKE :q OR p.brand ILIKE :q)';
+            $where[] = '(p.name LIKE :q OR p.brand LIKE :q)';
             $params['q'] = '%' . $f['q'] . '%';
         }
         if (isset($f['min_price']) && $f['min_price'] !== '') {
@@ -168,7 +168,7 @@ class Product extends Model
             'sale_price'  => $d['sale_price'] !== '' ? $d['sale_price'] : null,
             'brand'       => $d['brand'] ?? null,
             'status'      => $d['status'] ?? 'active',
-            'is_featured' => ($d['is_featured'] ?? false) ? 't' : 'f',
+            'is_featured' => ($d['is_featured'] ?? false) ? 1 : 0,
         ]);
     }
 

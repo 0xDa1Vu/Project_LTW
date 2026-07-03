@@ -10,26 +10,27 @@ services:
       - db
     environment:
       DB_HOST: db
-      DB_PORT: 5432
+      DB_PORT: 3306
       DB_NAME: fashion_shop
       DB_USER: shop
       DB_PASS: shop_secret
       APP_URL: http://localhost:8000
 
   db:
-    image: postgres:16-alpine
+    image: mysql:8.0
     container_name: ltw_db
     restart: unless-stopped
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_general_ci
     environment:
-      POSTGRES_DB: fashion_shop
-      POSTGRES_USER: shop
-      POSTGRES_PASSWORD: shop_secret
+      MYSQL_DATABASE: fashion_shop
+      MYSQL_USER: shop
+      MYSQL_PASSWORD: shop_secret
+      MYSQL_ROOT_PASSWORD: root_secret
     ports:
-      - "5434:5432"
+      - "3308:3306"
     volumes:
-      - pgdata:/var/lib/postgresql/data
-      - ./database/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
-      - ./database/seed.sql:/docker-entrypoint-initdb.d/02-seed.sql:ro
+      - mysqldata:/var/lib/mysql
+      - ./database/mysql_import.sql:/docker-entrypoint-initdb.d/01-import.sql:ro
 
   adminer:
     image: adminer:latest
@@ -41,4 +42,4 @@ services:
       - db
 
 volumes:
-  pgdata:
+  mysqldata:

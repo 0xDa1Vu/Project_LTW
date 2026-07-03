@@ -1,9 +1,9 @@
 FROM php:8.2-apache
 
-# Cài extension PostgreSQL (PDO) cho PHP
+# Cài extension MySQL (PDO) cho PHP
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends libpq-dev \
-    && docker-php-ext-install pdo pdo_pgsql pgsql \
+    && apt-get install -y --no-install-recommends default-mysql-client \
+    && docker-php-ext-install pdo pdo_mysql mysqli \
     && rm -rf /var/lib/apt/lists/*
 
 # Bật mod_rewrite cho .htaccess (route về front controller)

@@ -31,8 +31,8 @@ return [
     'app_url' => env('APP_URL', 'http://localhost:8000'),
     'app_env' => env('APP_ENV', 'local'),
     'db' => [
-        'host' => env('DB_HOST', 'db'),
-        'port' => env('DB_PORT', '5432'),
+        'host' => env('DB_HOST', '127.0.0.1'),
+        'port' => env('DB_PORT', '3306'),
         'name' => env('DB_NAME', 'fashion_shop'),
         'user' => env('DB_USER', 'shop'),
         'pass' => env('DB_PASS', 'shop_secret'),

@@ -32,8 +32,7 @@ class Review extends Model
     {
         $sql = "INSERT INTO reviews (product_id, user_id, rating, comment)
                 VALUES (:pid, :uid, :rating, :comment)
-                ON CONFLICT (product_id, user_id)
-                DO UPDATE SET rating = EXCLUDED.rating, comment = EXCLUDED.comment, created_at = now()";
+                ON DUPLICATE KEY UPDATE rating = VALUES(rating), comment = VALUES(comment), created_at = CURRENT_TIMESTAMP";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([
             'pid' => $productId, 'uid' => $userId,

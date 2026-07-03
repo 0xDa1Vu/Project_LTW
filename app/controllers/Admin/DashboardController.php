@@ -33,10 +33,10 @@ class DashboardController extends Controller
 
         // Doanh thu 14 ngày gần nhất
         $revenue = $db->query(
-            "SELECT to_char(created_at::date, 'DD/MM') AS day, SUM(total) AS amount
+            "SELECT DATE_FORMAT(created_at, '%d/%m') AS day, SUM(total) AS amount
              FROM orders
-             WHERE status != 'cancelled' AND created_at >= now() - interval '14 days'
-             GROUP BY created_at::date ORDER BY created_at::date"
+             WHERE status != 'cancelled' AND created_at >= NOW() - INTERVAL 14 DAY
+             GROUP BY DATE(created_at) ORDER BY DATE(created_at)"
         )->fetchAll();
 
         // Đơn theo trạng thái

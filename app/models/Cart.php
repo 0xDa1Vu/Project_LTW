@@ -56,8 +56,7 @@ class Cart extends Model
         // Upsert: nếu đã có variant trong giỏ thì cộng dồn
         $sql = "INSERT INTO cart_items (cart_id, variant_id, quantity)
                 VALUES (:cid, :vid, :q)
-                ON CONFLICT (cart_id, variant_id)
-                DO UPDATE SET quantity = cart_items.quantity + EXCLUDED.quantity";
+                ON DUPLICATE KEY UPDATE quantity = quantity + VALUES(quantity)";
         $stmt = $this->db->prepare($sql);
         $stmt->execute(['cid' => $cartId, 'vid' => $variantId, 'q' => $qty]);
     }

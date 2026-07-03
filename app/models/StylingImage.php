@@ -31,10 +31,15 @@ class StylingImage extends Model
         if (!$stylingIds) return [];
         $in = implode(',', array_map('intval', $stylingIds));
         $rows = $this->db->query(
-            "SELECT DISTINCT ON (styling_id) styling_id, image_url
-             FROM styling_images
-             WHERE styling_id IN ($in)
-             ORDER BY styling_id, is_cover DESC, sort_order ASC, id ASC"
+            "SELECT si.styling_id, si.image_url
+             FROM styling_images si
+             WHERE si.id = (
+                 SELECT id FROM styling_images
+                 WHERE styling_id = si.styling_id
+                 ORDER BY is_cover DESC, sort_order ASC, id ASC
+                 LIMIT 1
+             )
+             AND si.styling_id IN ($in)"
         )->fetchAll();
         $map = [];
         foreach ($rows as $r) { $map[(int) $r['styling_id']] = $r['image_url']; }

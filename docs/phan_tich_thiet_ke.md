@@ -219,7 +219,7 @@ sequenceDiagram
     participant CartCtl as CartController
     participant OrderCtl as OrderController
     participant PayCtl as PaymentController
-    participant DB as PostgreSQL
+    participant DB as MySQL
     participant Gateway as Cổng thanh toán (VNPay/SePay)
 
     KH->>CartCtl: Thêm sản phẩm vào giỏ (add)
@@ -277,7 +277,7 @@ flowchart TB
     end
 
     subgraph Data["Tầng dữ liệu"]
-        DB[(PostgreSQL)]
+        DB[(MySQL)]
     end
 
     subgraph External["Dịch vụ ngoài"]

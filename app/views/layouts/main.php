@@ -131,7 +131,7 @@ try {
         <div>
             <h4>Liên hệ</h4>
             <p>Đồ án Lập trình Web</p>
-            <p>PHP · PostgreSQL</p>
+            <p>PHP · MySQL</p>
         </div>
     </div>
     <div class="footer-bottom">© <?= date('Y') ?> ATELIER. Đồ án môn học.</div>

@@ -13,9 +13,9 @@ Website bán hàng thời trang (đồ án môn Lập trình Web), gồm 2 phầ
 | Lớp | Công nghệ | Vì sao |
 |---|---|---|
 | Ngôn ngữ | PHP 8.2 thuần | Không framework, dễ debug từng bước |
-| DB | PostgreSQL 16 qua PDO | Prepared statements chống SQLi; PDO là chuẩn, dễ port sang MySQL nếu cần |
+| DB | MySQL 8 qua PDO | Prepared statements chống SQLi; PDO là chuẩn, không phụ thuộc driver cụ thể |
 | Frontend | HTML/CSS/JS thuần + Chart.js (CDN) | Không cần build step (Webpack/Vite), mở file là chạy |
-| Triển khai | Docker Compose (web + db + adminer) | Đồng bộ môi trường giữa các máy trong nhóm |
+| Triển khai | XAMPP hoặc Docker Compose (web + db + adminer) | Chạy được cả 2 song song, không phụ thuộc máy cụ thể |
 
 ## 2. MVC tự viết hoạt động như thế nào
 
@@ -36,7 +36,7 @@ Router::dispatch()      (app/core/Router.php)
 Controller (VD ProductController::show($slug))
    │  gọi Model để lấy dữ liệu
    ▼
-Model (VD Product::findBySlug($slug))   — chạy PDO prepared statement lên PostgreSQL
+Model (VD Product::findBySlug($slug))   — chạy PDO prepared statement lên MySQL
    │  trả về mảng dữ liệu (array), KHÔNG phải object ORM
    ▼
 Controller nhận dữ liệu → gọi $this->view('product/show', ['product' => $product])
@@ -74,9 +74,8 @@ app/               ← toàn bộ code nghiệp vụ, KHÔNG truy cập trực t
 
 config/config.php   đọc file .env → mảng cấu hình (đọc qua hàm cfg('key.path'))
 database/
-  schema.sql         định nghĩa 11 bảng + FK + CHECK constraint
-  seed.sql           dữ liệu mẫu, tự nạp khi container DB khởi tạo lần đầu
-docker/, docker-compose.yml   môi trường chạy đồng nhất
+  mysql_import.sql   schema (14 bảng + FK + CHECK) + dữ liệu mẫu, dùng để import vào MySQL
+docker/, docker-compose.yml   môi trường Docker (tuỳ chọn, song song với XAMPP)
 ```
 
 ## 4. Vòng đời một request điển hình — ví dụ "Thêm vào giỏ hàng"
