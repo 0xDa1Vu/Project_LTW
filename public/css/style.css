@@ -355,6 +355,7 @@ a{color:inherit;text-decoration:none}
 .co2-input-static{display:flex;flex-direction:column;justify-content:center;gap:2px;cursor:default;background:#fafafa;color:#111;height:56px}
 .co2-input-label{font-size:11px;color:#999;font-weight:500;letter-spacing:.03em;text-transform:uppercase}
 .co2-addr-row2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.co2-field-error{margin:-8px 0 0;font-size:13px;color:#c62828}
 .co2-select{appearance:none;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23999' stroke-width='2.5'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") no-repeat right 16px center;padding-right:40px;cursor:pointer}
 .co2-select:disabled{color:#aaa;background-color:#fafafa;cursor:default}
 

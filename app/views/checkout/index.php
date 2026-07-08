@@ -21,8 +21,10 @@
         <div class="co2-field-group">
           <input type="text" name="name" placeholder="Họ và tên"
                  value="<?= e($user['name'] ?? '') ?>" required class="co2-input">
-          <input type="tel" name="phone" placeholder="Số điện thoại"
-                 value="<?= e($user['phone'] ?? '') ?>" required class="co2-input">
+          <input type="tel" name="phone" id="coPhoneInput" placeholder="Số điện thoại"
+                 value="<?= e($user['phone'] ?? '') ?>" required class="co2-input"
+                 pattern="[0-9]{10}" maxlength="10">
+          <p id="coPhoneMsg" class="co2-field-error" hidden>Vui lòng kiểm tra số điện thoại.</p>
           <input type="email" name="email" placeholder="Email"
                  value="<?= e($user['email'] ?? '') ?>" class="co2-input">
           <div class="co2-input co2-input-static">
@@ -329,5 +331,18 @@
   document.getElementById('coCouponInput').addEventListener('keydown', function (e) {
     if (e.key === 'Enter') { e.preventDefault(); document.getElementById('coCouponBtn').click(); }
   });
+
+  const phoneInput = document.getElementById('coPhoneInput');
+  const phoneMsg = document.getElementById('coPhoneMsg');
+  function checkPhone() {
+    const ok = phoneInput.checkValidity();
+    phoneMsg.hidden = ok;
+    return ok;
+  }
+  phoneInput.addEventListener('invalid', function (e) {
+    e.preventDefault();
+    checkPhone();
+  });
+  phoneInput.addEventListener('input', checkPhone);
 })();
 </script>

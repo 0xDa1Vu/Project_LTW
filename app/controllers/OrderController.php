@@ -62,6 +62,11 @@ class OrderController extends Controller
             $this->redirect('/checkout');
         }
 
+        if (!preg_match('/^[0-9]{10}$/', $info['phone'])) {
+            Session::flash('error', 'Vui lòng kiểm tra số điện thoại.');
+            $this->redirect('/checkout');
+        }
+
         // Áp dụng coupon nếu có
         $couponCode = strtoupper(trim($this->input('coupon_code')));
         $discount   = 0;
