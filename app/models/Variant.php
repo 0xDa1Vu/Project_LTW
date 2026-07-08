@@ -53,10 +53,10 @@ class Variant extends Model
     public function decreaseStock(int $variantId, int $qty): bool
     {
         $stmt = $this->db->prepare(
-            'UPDATE variants SET stock = stock - :q
-             WHERE id = :id AND stock >= :q'
+            'UPDATE variants SET stock = stock - :q1
+             WHERE id = :id AND stock >= :q2'
         );
-        $stmt->execute(['q' => $qty, 'id' => $variantId]);
+        $stmt->execute(['q1' => $qty, 'q2' => $qty, 'id' => $variantId]);
         return $stmt->rowCount() > 0;
     }
 }
