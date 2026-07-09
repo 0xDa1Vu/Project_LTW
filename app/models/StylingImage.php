@@ -51,7 +51,7 @@ class StylingImage extends Model
         return $this->insert([
             'styling_id' => $stylingId,
             'image_url'  => $url,
-            'is_cover'   => $cover ? 'true' : 'false',
+            'is_cover'   => $cover ? 1 : 0,
         ]);
     }
 

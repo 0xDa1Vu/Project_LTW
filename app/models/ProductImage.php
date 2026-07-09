@@ -21,7 +21,7 @@ class ProductImage extends Model
         return $this->insert([
             'product_id' => $productId,
             'image_url'  => $url,
-            'is_primary' => $primary ? 'true' : 'false',
+            'is_primary' => $primary ? 1 : 0,
         ]);
     }
 
